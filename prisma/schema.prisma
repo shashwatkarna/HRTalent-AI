@@ -7,8 +7,6 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -168,6 +166,7 @@ model AIEvaluation {
   confidenceScore     Float?
   
   finalRecommendation String?    // "Strongly Recommended", "Recommended", "Not Recommended"
+  aiSummary           String?    @db.Text
   
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
