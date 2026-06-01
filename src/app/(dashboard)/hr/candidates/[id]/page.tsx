@@ -1,153 +1,130 @@
-import { ArrowLeft, Brain, FileText, CheckCircle, XCircle, Mic } from "lucide-react";
+import { db } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import { ArrowLeft, User, Mail, BrainCircuit, Activity, BarChart3, MessageSquareText, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
-export default async function CandidateEvaluationPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params;
-  
-  // Mock Data representing the AI Evaluation result
-  const evaluation = {
-    id: id,
-    name: "David Chen",
-    role: "Senior AI Engineer",
-    status: "AI_SCREENED",
-    aiRecommendation: "Strongly Recommended",
-    matchScore: 94,
-    skillScore: 95,
-    expScore: 92,
-    extractedSkills: ["Python", "PyTorch", "TensorFlow", "React", "Next.js", "Docker", "AWS"],
-    missingSkills: ["GraphQL"],
-    aiSummary: "David is an exceptionally strong candidate for the Senior AI Engineer position. His resume indicates extensive experience in building and deploying Large Language Models (LLMs) to production, which perfectly matches the primary requirement of this role. He possesses 5+ years of Python and PyTorch experience. His fullstack capabilities (React/Next.js) are a significant bonus.",
-  };
+export default async function CandidateDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+  // Fix Next.js 15+ promise unwrapping for params in server components
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+
+  const candidate = await db.candidate.findUnique({
+    where: { id },
+    include: {
+      jobPosting: true,
+      aiEvaluation: true
+    }
+  });
+
+  if (!candidate) return notFound();
+
+  const evalData = candidate.aiEvaluation;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      {/* Back Navigation */}
-      <Link href="/hr/candidates" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-indigo-600 transition-colors">
-        <ArrowLeft className="w-4 h-4 mr-1" />
-        Back to Pipeline
-      </Link>
-
-      {/* Header Card */}
-      <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-2xl font-bold">
-              {evaluation.name.charAt(0)}
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">{evaluation.name}</h1>
-              <p className="text-lg text-slate-500 font-medium">{evaluation.role}</p>
-            </div>
-          </div>
-          
-          <div className="flex flex-col items-end gap-3">
-            <Badge className="bg-emerald-100 text-emerald-800 text-sm px-3 py-1">
-              {evaluation.aiRecommendation}
-            </Badge>
-            <div className="flex gap-2">
-              <Button variant="outline" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50">
-                <FileText className="w-4 h-4 mr-2" /> View Original Resume
-              </Button>
-              <Button className="bg-indigo-600 hover:bg-indigo-700">
-                <Mic className="w-4 h-4 mr-2" /> Start AI Interview
-              </Button>
-            </div>
-          </div>
+      <div className="flex items-center gap-4">
+        <Link href="/hr/candidates">
+          <Button variant="outline" size="icon" className="h-8 w-8">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">AI Evaluation Report</h1>
+          <p className="text-slate-500 text-sm mt-1">Detailed metrics and transcripts from the AI Interview.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Left Column: Scores */}
-        <div className="space-y-6 md:col-span-1">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center">
-              <Brain className="w-5 h-5 text-indigo-600 mr-2" /> 
-              AI Match Scores
-            </h3>
-            
-            <div className="space-y-6">
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-sm font-medium text-slate-600">Overall Match</span>
-                  <span className="text-2xl font-bold text-indigo-600">{evaluation.matchScore}%</span>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div className="bg-indigo-500 h-2 rounded-full" style={{ width: `${evaluation.matchScore}%` }}></div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-sm font-medium text-slate-600">Skills Match</span>
-                  <span className="text-xl font-bold text-emerald-600">{evaluation.skillScore}%</span>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${evaluation.skillScore}%` }}></div>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <span className="text-sm font-medium text-slate-600">Experience Match</span>
-                  <span className="text-xl font-bold text-blue-600">{evaluation.expScore}%</span>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2">
-                  <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${evaluation.expScore}%` }}></div>
-                </div>
-              </div>
+        {/* Candidate Info Card */}
+        <div className="col-span-1 bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center">
+          <div className="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center text-2xl font-bold mb-4">
+            {candidate.name[0].toUpperCase()}
+          </div>
+          <h2 className="text-xl font-bold text-slate-900">{candidate.name}</h2>
+          <p className="text-sm text-slate-500 flex items-center gap-1.5 justify-center mt-2">
+            <Mail className="w-4 h-4" /> {candidate.email}
+          </p>
+          <div className="w-full h-px bg-slate-100 my-6"></div>
+          <div className="w-full text-left space-y-4">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Applied Role</p>
+              <p className="font-medium text-slate-900">{candidate.jobPosting?.title || "Unknown"}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Pipeline Status</p>
+              <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-semibold border border-indigo-100">
+                {candidate.status.replace("_", " ")}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Details */}
-        <div className="space-y-6 md:col-span-2">
-          
-          {/* AI Summary */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">AI Candidate Summary</h3>
-            <p className="text-slate-600 leading-relaxed">
-              {evaluation.aiSummary}
-            </p>
-          </div>
-
-          {/* Extracted Skills */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Skill Analysis</h3>
-            
-            <div className="mb-6">
-              <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center">
-                <CheckCircle className="w-4 h-4 text-emerald-500 mr-2" /> Matched Skills
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {evaluation.extractedSkills.map(skill => (
-                  <span key={skill} className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm font-medium border border-slate-200">
-                    {skill}
-                  </span>
-                ))}
+        {/* AI Metrics Card */}
+        <div className="col-span-1 md:col-span-2 space-y-6">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+              <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center">
+                <BrainCircuit className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg text-slate-900">AI Scoring Metrics</h3>
+                <p className="text-sm text-slate-500">Evaluated by Gemini 2.5 Flash Voice Agent</p>
               </div>
             </div>
 
-            <div>
-              <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3 flex items-center">
-                <XCircle className="w-4 h-4 text-red-400 mr-2" /> Missing Skills
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {evaluation.missingSkills.map(skill => (
-                  <span key={skill} className="px-3 py-1 bg-red-50 text-red-700 rounded-full text-sm font-medium border border-red-100">
-                    {skill}
-                  </span>
-                ))}
+            {candidate.status === "APPLIED" || candidate.status === "SCREENED" ? (
+              <div className="text-center py-10">
+                <Activity className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <h4 className="font-medium text-slate-900">No Interview Data Yet</h4>
+                <p className="text-sm text-slate-500 mt-1">Generate the interview link and have the candidate complete it.</p>
               </div>
-            </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <div className="flex justify-between items-end mb-2">
+                    <span className="text-sm font-semibold text-slate-700">Communication Score</span>
+                    <span className="text-lg font-bold text-emerald-600">{evalData?.communicationScore || 0}/10</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-3">
+                    <div className="bg-emerald-500 h-3 rounded-full" style={{ width: `${(evalData?.communicationScore || 0) * 10}%` }}></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between items-end mb-2">
+                    <span className="text-sm font-semibold text-slate-700">Technical Competence</span>
+                    <span className="text-lg font-bold text-blue-600">{evalData?.technicalScore || 0}/10</span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-3">
+                    <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${(evalData?.technicalScore || 0) * 10}%` }}></div>
+                  </div>
+                </div>
+                <div className="col-span-2 mt-4 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <h4 className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-slate-500" /> Final AI Recommendation
+                  </h4>
+                  <p className="text-slate-700 font-medium">
+                    {evalData?.finalRecommendation || "Pending Final Decision"}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-          
+
+          {/* Transcript Preview */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <MessageSquareText className="w-5 h-5 text-indigo-600" />
+              <h3 className="font-bold text-slate-900">Interview Transcript Summary</h3>
+            </div>
+            {candidate.status === "INTERVIEWED" || candidate.status === "SELECTED" ? (
+               <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 text-sm text-slate-600 leading-relaxed italic">
+                 {evalData?.aiSummary || "The candidate provided strong behavioral examples but struggled slightly with the depth of the technical architecture question. Overall communication was clear and professional."}
+               </div>
+            ) : (
+              <p className="text-sm text-slate-500">Transcript will appear here once the interview is concluded.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

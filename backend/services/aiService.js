@@ -9,10 +9,12 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 async function generateGreeting(candidateData) {
   const prompt = `
     You are an AI Technical Recruiter for AITalent-HR. 
-    You are conducting a voice interview with a candidate named ${candidateData.name || "the candidate"}.
+    You are conducting a voice interview with a candidate named ${candidateData.candidateName || "the candidate"}.
     The role they applied for is ${candidateData.role || "Software Engineer"}.
     
-    Start the interview by introducing yourself briefly, welcoming them, and asking them to introduce themselves and their recent experience.
+    Their resume has been parsed and they have the following top skills: ${candidateData.skills ? candidateData.skills.join(", ") : "Not specified"}.
+    
+    Start the interview by introducing yourself briefly, welcoming them by name, and asking a specific question about one of their skills.
     Keep it conversational, professional, and under 3 sentences so it sounds natural when spoken by TTS.
   `;
 

@@ -16,51 +16,74 @@ export default function VoiceInterviewPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isAiThinking, setIsAiThinking] = useState(true);
   const [interviewComplete, setInterviewComplete] = useState(false);
+  const [candidateName, setCandidateName] = useState("Candidate");
   
   // Speech Recognition reference
   const recognitionRef = useRef<any>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize Socket Connection
+  // Initialize Socket Connection & Fetch Candidate Data
   useEffect(() => {
-    // Connect to our new Dedicated Express Backend
-    const newSocket = io("http://localhost:3001");
-    setSocket(newSocket);
+    if (!params?.id) return;
 
-    newSocket.on("connect", () => {
-      setIsConnected(true);
-      // Start the interview once connected
-      newSocket.emit("start_interview", { 
-        name: "Candidate", 
-        role: "Software Engineer" 
+    let newSocket: Socket;
+
+    const fetchCandidate = async () => {
+      try {
+        const res = await fetch(`/api/candidate/${params.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCandidateName(data.name);
+          return data;
+        }
+      } catch (err) {
+        console.error("Failed to fetch candidate data:", err);
+      }
+      return null;
+    };
+
+    fetchCandidate().then((candidateData) => {
+      // Connect to our Dedicated Express Backend
+      newSocket = io("http://localhost:3001", {
+        query: { candidateId: params.id as string }
       });
+      setSocket(newSocket);
+
+      newSocket.on("connect", () => {
+        setIsConnected(true);
+        // Start the interview with dynamic resume data
+        newSocket.emit("start_interview", { 
+          candidateId: params.id,
+          candidateName: candidateData?.name || "Candidate", 
+          skills: candidateData?.skills || []
+        });
+      });
+
+      newSocket.on("ai_response", (data: { text: string, type?: string, metrics?: any, isComplete?: boolean }) => {
+        setIsAiThinking(false);
+        setMessages(prev => [...prev, { role: "ai", text: data.text }]);
+        
+        // Simulate Text-to-Speech (TTS)
+        if ('speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(data.text);
+          utterance.rate = 1.0;
+          utterance.pitch = 1.1;
+          window.speechSynthesis.speak(utterance);
+        }
+
+        if (data.isComplete) {
+          setInterviewComplete(true);
+        }
+      });
+
+      newSocket.on("disconnect", () => setIsConnected(false));
     });
-
-    newSocket.on("ai_response", (data: { text: string, type?: string, metrics?: any, isComplete?: boolean }) => {
-      setIsAiThinking(false);
-      
-      setMessages(prev => [...prev, { role: "ai", text: data.text }]);
-      
-      // Simulate Text-to-Speech (TTS)
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(data.text);
-        utterance.rate = 1.0;
-        utterance.pitch = 1.1;
-        window.speechSynthesis.speak(utterance);
-      }
-
-      if (data.isComplete) {
-        setInterviewComplete(true);
-      }
-    });
-
-    newSocket.on("disconnect", () => setIsConnected(false));
     
     return () => {
-      newSocket.close();
+      if (newSocket) newSocket.close();
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     };
-  }, []);
+  }, [params?.id]);
 
   // Initialize Browser Speech Recognition (Web Speech API)
   useEffect(() => {
