@@ -32,6 +32,9 @@ model User {
   accounts      Account[]
   sessions      Session[]
   
+  // Link to Employee Data
+  employeeProfile EmployeeProfile?
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -61,5 +64,112 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------------------------------------------
+// Core HR Modules Data
+// ------------------------------------------------------------------
+
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  
+  employees   EmployeeProfile[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model EmployeeProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  employeeId     String   @unique // e.g., "EMP-001"
+  contactNumber  String?
+  address        String?
+  
+  designation    String?
+  joiningDate    DateTime?
+  salary         Float?
+  employmentStatus String @default("ACTIVE") // ACTIVE, ON_LEAVE, TERMINATED
+  
+  departmentId   String?
+  department     Department? @relation(fields: [departmentId], references: [id])
+  
+  // For hierarchical reporting
+  managerId      String?
+  manager        EmployeeProfile?  @relation("ManagerToEmployee", fields: [managerId], references: [id])
+  directReports  EmployeeProfile[] @relation("ManagerToEmployee")
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ------------------------------------------------------------------
+// AI Recruitment Pipeline Data (Primary Feature)
+// ------------------------------------------------------------------
+
+model JobPosting {
+  id              String      @id @default(cuid())
+  title           String
+  description     String      @db.Text
+  requiredSkills  Json        // Array of required skills
+  isActive        Boolean     @default(true)
+  
+  candidates      Candidate[]
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+enum CandidateStatus {
+  APPLIED
+  SCREENED
+  INTERVIEWED
+  SELECTED
+  HIRED
+  REJECTED
+}
+
+model Candidate {
+  id              String           @id @default(cuid())
+  name            String
+  email           String           @unique
+  phone           String?
+  resumeUrl       String?          // URL to PDF in Supabase Storage
+  status          CandidateStatus  @default(APPLIED)
+  
+  jobPostingId    String
+  jobPosting      JobPosting       @relation(fields: [jobPostingId], references: [id])
+  
+  aiEvaluation    AIEvaluation?
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model AIEvaluation {
+  id                  String     @id @default(cuid())
+  candidateId         String     @unique
+  candidate           Candidate  @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  
+  // Resume Parsing Scores
+  matchScore          Float?     // Overall fit against JD (0-100)
+  skillScore          Float?
+  experienceScore     Float?
+  extractedSkills     Json?      // Skills found in the resume
+  
+  // Interview Scores
+  interviewTranscript String?    @db.Text
+  communicationScore  Float?
+  technicalScore      Float?
+  confidenceScore     Float?
+  
+  finalRecommendation String?    // "Strongly Recommended", "Recommended", "Not Recommended"
+  
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
 }
 
