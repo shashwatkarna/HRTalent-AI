@@ -18,7 +18,7 @@ export default async function HRRecruiterDashboard() {
   });
 
   const topCandidates = await db.candidate.findMany({
-    where: { status: { in: ['AI_SCREENED', 'INTERVIEWED'] } },
+    where: { status: { in: ['SCREENED', 'INTERVIEWED'] } },
     include: { aiEvaluation: true, jobPosting: true },
     orderBy: { 
       aiEvaluation: { matchScore: 'desc' }
@@ -27,7 +27,7 @@ export default async function HRRecruiterDashboard() {
   });
 
   const totalApplicants = await db.candidate.count();
-  const aiScreenedCount = await db.candidate.count({ where: { status: 'AI_SCREENED' } });
+  const aiScreenedCount = await db.candidate.count({ where: { status: 'SCREENED' } });
   const aiInterviewedCount = await db.candidate.count({ where: { status: 'INTERVIEWED' } });
 
   return (

@@ -1,34 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { login } from "@/app/login/actions";
-import { BrainCircuit, AlertCircle } from "lucide-react";
+import { setupAdmin } from "./actions";
+import { ShieldCheck, AlertCircle, CheckCircle2 } from "lucide-react";
 
-export default function LoginPage() {
+export default function AdminSetupPage() {
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
     setIsLoading(true);
     setError(null);
-    const result = await login(formData);
+    setSuccess(null);
+    const result = await setupAdmin(formData);
     
     if (result?.error) {
       setError(result.error);
-      setIsLoading(false);
+    } else if (result?.success) {
+      setSuccess("Super Admin created successfully! You can now log in.");
     }
+    setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f8f9fc]">
       <div className="bg-white p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] w-full max-w-md border border-slate-100">
         
-        <div className="flex flex-col items-center justify-center mb-8">
+        <div className="flex flex-col items-center justify-center mb-8 text-center">
           <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
-            <BrainCircuit className="w-7 h-7" />
+            <ShieldCheck className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Welcome Back</h1>
-          <p className="text-sm text-slate-500 mt-1">Sign in to your enterprise account</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">System Setup</h1>
+          <p className="text-sm text-slate-500 mt-1">Create the initial Super Admin account. Do not share this link.</p>
         </div>
         
         {error && (
@@ -38,9 +42,19 @@ export default function LoginPage() {
           </div>
         )}
 
+        {success && (
+          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-lg flex items-start gap-3 text-emerald-700 text-sm">
+            <CheckCircle2 className="w-5 h-5 shrink-0" />
+            <div>
+              <p className="font-semibold">{success}</p>
+              <p className="mt-1">Go to <a href="/login" className="underline">/login</a></p>
+            </div>
+          </div>
+        )}
+
         <form action={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email Address</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Admin Email</label>
             <input 
               name="email"
               type="email" 
@@ -50,11 +64,12 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-1.5">Secure Password</label>
             <input 
               name="password"
               type="password" 
               required
+              minLength={6}
               className="w-full border border-slate-200 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all shadow-sm"
               placeholder="••••••••"
             />
@@ -62,16 +77,12 @@ export default function LoginPage() {
           
           <button 
             type="submit" 
-            disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 rounded-lg transition-colors mt-4 shadow-sm flex items-center justify-center"
+            disabled={isLoading || !!success}
+            className="w-full bg-slate-900 hover:bg-black disabled:bg-slate-400 text-white font-semibold py-3 rounded-lg transition-colors mt-4 shadow-sm flex items-center justify-center"
           >
-            {isLoading ? "Authenticating..." : "Sign In"}
+            {isLoading ? "Creating Admin..." : "Initialize Super Admin"}
           </button>
         </form>
-
-        <div className="mt-8 text-center text-xs text-slate-500">
-          <p>Don't have an account? Please contact your IT Administrator.</p>
-        </div>
       </div>
     </div>
   );

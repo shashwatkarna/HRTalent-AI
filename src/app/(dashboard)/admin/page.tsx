@@ -1,22 +1,153 @@
-export default function AdminDashboardPage() {
+import { Users, Briefcase, DollarSign, TrendingDown, UserPlus, Activity } from "lucide-react";
+import { db } from "@/lib/prisma";
+
+export default async function AdminDashboardPage() {
+  // Fetch real metrics from Prisma
+  const totalEmployees = await db.user.count({ where: { role: { not: "ADMIN" } } });
+  const openPositions = await db.jobPosting.count({ where: { isActive: true } });
+  const totalCandidates = await db.candidate.count();
+  
+  // Calculate a simulated monthly payroll based on EmployeeProfiles (if data exists)
+  const profiles = await db.employeeProfile.findMany({ select: { salary: true } });
+  const monthlyPayroll = profiles.reduce((sum, profile) => sum + (profile.salary || 0), 0) / 12;
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+  };
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Admin Dashboard</h1>
-      <p className="text-slate-500">Welcome back! Here's what's happening today.</p>
-      
-      {/* Placeholder for Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-        {[
-          { label: "Total Employees", value: "5,241" },
-          { label: "Active Roles", value: "84" },
-          { label: "New Hires", value: "32" },
-          { label: "Pending Leaves", value: "14" },
-        ].map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <h3 className="text-sm font-medium text-slate-500">{stat.label}</h3>
-            <p className="text-3xl font-bold text-slate-900 mt-2">{stat.value}</p>
+    <div className="space-y-6 max-w-7xl mx-auto">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Admin Overview</h1>
+        <p className="text-slate-500 mt-1">Company-wide analytics and workforce metrics.</p>
+      </div>
+
+      {/* Top Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Users className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded">+12% this month</span>
           </div>
-        ))}
+          <div className="text-3xl font-bold text-slate-900 mb-1">{totalEmployees}</div>
+          <div className="text-sm font-medium text-slate-500">Total Employees</div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+              <Briefcase className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded">Active</span>
+          </div>
+          <div className="text-3xl font-bold text-slate-900 mb-1">{openPositions}</div>
+          <div className="text-sm font-medium text-slate-500">Open Positions</div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <DollarSign className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-slate-900 mb-1">{monthlyPayroll > 0 ? formatCurrency(monthlyPayroll) : "$0"}</div>
+          <div className="text-sm font-medium text-slate-500">Monthly Payroll Run</div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+              <TrendingDown className="w-5 h-5" />
+            </div>
+            <span className="text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded">Needs attention</span>
+          </div>
+          <div className="text-3xl font-bold text-slate-900 mb-1">2.4%</div>
+          <div className="text-sm font-medium text-slate-500">Attrition Rate</div>
+        </div>
+
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Fake Chart Placeholder: Recruitment Funnel */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="font-bold text-slate-900">Recruitment Funnel</h3>
+              <p className="text-xs text-slate-500">AI Screening conversion rates</p>
+            </div>
+            <UserPlus className="w-5 h-5 text-slate-400" />
+          </div>
+          
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="font-medium text-slate-700">Total Applicants ({totalCandidates})</span>
+                <span className="text-slate-500">100%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-slate-300 w-full"></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="font-medium text-slate-700">AI Screened Passed</span>
+                <span className="text-slate-500">34%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-500 w-[34%]"></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="font-medium text-slate-700">Interviewed</span>
+                <span className="text-slate-500">12%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-purple-500 w-[12%]"></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-sm mb-1">
+                <span className="font-medium text-slate-700">Hired</span>
+                <span className="text-slate-500">3%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-emerald-500 w-[3%]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Fake Chart Placeholder: Attendance Trends */}
+        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="font-bold text-slate-900">Company Health</h3>
+              <p className="text-xs text-slate-500">Daily attendance and productivity</p>
+            </div>
+            <Activity className="w-5 h-5 text-slate-400" />
+          </div>
+          
+          <div className="flex-1 flex items-end gap-2 h-40">
+            {/* Simple CSS Bar Chart */}
+            {[40, 60, 45, 80, 55, 90, 70, 85, 95, 60, 80, 85, 90].map((height, i) => (
+              <div key={i} className="flex-1 bg-blue-100 rounded-t-sm relative group hover:bg-blue-200 transition-colors" style={{ height: `${height}%` }}>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                  {height}%
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between text-xs text-slate-400 mt-2 border-t border-slate-100 pt-2">
+            <span>May 1</span>
+            <span>May 15</span>
+            <span>May 30</span>
+          </div>
+        </div>
+
       </div>
     </div>
   );

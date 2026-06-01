@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         email: evaluation.email || `unknown-${Date.now()}@example.com`,
         phone: evaluation.phone || null,
         jobPostingId: job.id,
-        status: "AI_SCREENED",
+        status: "SCREENED",
         aiEvaluation: {
           create: {
             matchScore: evaluation.matchScore,
