@@ -11,6 +11,13 @@ export default async function AdminDashboardPage() {
   const profiles = await db.employeeProfile.findMany({ select: { salary: true } });
   const monthlyPayroll = profiles.reduce((sum, profile) => sum + (profile.salary || 0), 0) / 12;
 
+  const appliedCount = await db.candidate.count({ where: { status: "APPLIED" } });
+  const screenedCount = await db.candidate.count({ where: { status: { in: ["SCREENED", "INTERVIEWED", "SELECTED", "HIRED"] } } });
+  const interviewedCount = await db.candidate.count({ where: { status: { in: ["INTERVIEWED", "SELECTED", "HIRED"] } } });
+  const hiredCount = await db.candidate.count({ where: { status: "HIRED" } });
+
+  const getPercent = (count: number) => totalCandidates > 0 ? Math.round((count / totalCandidates) * 100) : 0;
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
   };
@@ -71,12 +78,12 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Fake Chart Placeholder: Recruitment Funnel */}
+        {/* Dynamic Recruitment Funnel */}
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="font-bold text-slate-900">Recruitment Funnel</h3>
-              <p className="text-xs text-slate-500">AI Screening conversion rates</p>
+              <p className="text-xs text-slate-500">Real-time candidate conversion rates</p>
             </div>
             <UserPlus className="w-5 h-5 text-slate-400" />
           </div>
@@ -93,29 +100,29 @@ export default async function AdminDashboardPage() {
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="font-medium text-slate-700">AI Screened Passed</span>
-                <span className="text-slate-500">34%</span>
+                <span className="font-medium text-slate-700">AI Screened Passed ({screenedCount})</span>
+                <span className="text-slate-500">{getPercent(screenedCount)}%</span>
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 w-[34%]"></div>
+                <div className="h-full bg-blue-500" style={{ width: `${getPercent(screenedCount)}%` }}></div>
               </div>
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="font-medium text-slate-700">Interviewed</span>
-                <span className="text-slate-500">12%</span>
+                <span className="font-medium text-slate-700">Interviewed ({interviewedCount})</span>
+                <span className="text-slate-500">{getPercent(interviewedCount)}%</span>
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-purple-500 w-[12%]"></div>
+                <div className="h-full bg-purple-500" style={{ width: `${getPercent(interviewedCount)}%` }}></div>
               </div>
             </div>
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="font-medium text-slate-700">Hired</span>
-                <span className="text-slate-500">3%</span>
+                <span className="font-medium text-slate-700">Hired ({hiredCount})</span>
+                <span className="text-slate-500">{getPercent(hiredCount)}%</span>
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 w-[3%]"></div>
+                <div className="h-full bg-emerald-500" style={{ width: `${getPercent(hiredCount)}%` }}></div>
               </div>
             </div>
           </div>

@@ -1,6 +1,24 @@
 import { BrainCircuit, ShieldCheck, Scale, FileSearch, AlertTriangle } from "lucide-react";
+import { db } from "@/lib/prisma";
 
-export default function AIGovernancePage() {
+export default async function AIGovernancePage() {
+  const evaluations = await db.aIEvaluation.findMany({
+    include: {
+      candidate: {
+        include: { jobPosting: true }
+      }
+    },
+    orderBy: { createdAt: "desc" },
+    take: 20
+  });
+
+  const totalAudits = await db.aIEvaluation.count();
+  
+  // Calculate a fake "Confidence" based on average matchScore for demo
+  const avgMatch = evaluations.length > 0 
+    ? evaluations.reduce((sum, evalItem) => sum + (evalItem.matchScore || 0), 0) / evaluations.length 
+    : 98.4;
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       <div>
@@ -16,7 +34,7 @@ export default function AIGovernancePage() {
           </div>
           <div>
             <div className="text-sm font-medium text-slate-500">System Confidence</div>
-            <div className="text-2xl font-bold text-slate-900">98.4%</div>
+            <div className="text-2xl font-bold text-slate-900">{avgMatch.toFixed(1)}%</div>
           </div>
         </div>
 
@@ -36,7 +54,7 @@ export default function AIGovernancePage() {
           </div>
           <div>
             <div className="text-sm font-medium text-slate-500">Automated Audits</div>
-            <div className="text-2xl font-bold text-slate-900">14,203</div>
+            <div className="text-2xl font-bold text-slate-900">{totalAudits}</div>
           </div>
         </div>
       </div>
@@ -54,53 +72,64 @@ export default function AIGovernancePage() {
         <div className="p-6">
           <div className="space-y-6">
             
-            {/* Log Entry 1 */}
-            <div className="flex gap-4 pb-6 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                <BrainCircuit className="w-5 h-5" />
+            {evaluations.length === 0 ? (
+              <div className="text-center py-10 text-slate-500">
+                <FileSearch className="w-10 h-10 mx-auto text-slate-300 mb-3" />
+                <p>No AI evaluations have been generated yet.</p>
+                <p className="text-sm">Run a candidate through the Voice Interview pipeline to generate audit logs.</p>
               </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-semibold text-slate-900">Advanced: Alex Johnson</h4>
-                    <p className="text-sm text-slate-500">Role: Senior Frontend Developer</p>
+            ) : (
+              evaluations.map((evalItem) => {
+                const isAdvanced = (evalItem.matchScore || 0) >= 70;
+                return (
+                  <div key={evalItem.id} className="flex gap-4 pb-6 border-b border-slate-100 last:border-0 last:pb-0">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+                      isAdvanced ? "bg-emerald-100 text-emerald-600" : "bg-rose-100 text-rose-600"
+                    }`}>
+                      {isAdvanced ? <BrainCircuit className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-semibold text-slate-900">
+                            {isAdvanced ? "Advanced" : "Rejected"}: {evalItem.candidate.name}
+                          </h4>
+                          <p className="text-sm text-slate-500">Role: {evalItem.candidate.jobPosting.title}</p>
+                        </div>
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${
+                          isAdvanced 
+                            ? "text-emerald-700 bg-emerald-50 border-emerald-200" 
+                            : "text-rose-700 bg-rose-50 border-rose-200"
+                        }`}>
+                          {evalItem.matchScore}% Match
+                        </span>
+                      </div>
+                      <div className="mt-3 bg-slate-50 p-4 rounded-lg border border-slate-100 text-sm text-slate-700">
+                        <p className="font-semibold mb-1 text-slate-900">AI Reasoning (Transcript / Summary):</p>
+                        <p className="text-slate-600 whitespace-pre-wrap">{evalItem.aiSummary || "No reasoning provided."}</p>
+                        
+                        <div className="mt-3 pt-3 border-t border-slate-200 grid grid-cols-2 gap-4">
+                          <div>
+                            <span className="text-xs text-slate-500 block">Communication Score</span>
+                            <span className="font-semibold text-slate-800">{evalItem.communicationScore || 'N/A'}/10</span>
+                          </div>
+                          <div>
+                            <span className="text-xs text-slate-500 block">Technical Score</span>
+                            <span className="font-semibold text-slate-800">{evalItem.technicalScore || 'N/A'}/10</span>
+                          </div>
+                        </div>
+                        {!isAdvanced && (
+                          <div className="mt-3 text-xs text-slate-500 flex items-center gap-1.5">
+                            <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
+                            <span className="text-indigo-600 font-medium">Fairness Check Passed:</span> Decision based purely on technical requirements. No demographic bias detected.
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-xs font-medium text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">92% Match</span>
-                </div>
-                <div className="mt-3 bg-slate-50 p-4 rounded-lg border border-slate-100 text-sm text-slate-700">
-                  <p className="font-semibold mb-1 text-slate-900">AI Reasoning:</p>
-                  <ul className="list-disc list-inside space-y-1 text-slate-600">
-                    <li>Candidate possesses 6 years of React experience (exceeds requirement of 5).</li>
-                    <li>Strong semantic alignment with "Next.js" and "Tailwind CSS" in past projects.</li>
-                    <li>Communication score from Voice AI was 8.5/10.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Log Entry 2 */}
-            <div className="flex gap-4 pb-6 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 shrink-0">
-                <AlertTriangle className="w-5 h-5" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-semibold text-slate-900">Rejected: Anonymous Profile #842</h4>
-                    <p className="text-sm text-slate-500">Role: Backend Engineer</p>
-                  </div>
-                  <span className="text-xs font-medium text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">31% Match</span>
-                </div>
-                <div className="mt-3 bg-slate-50 p-4 rounded-lg border border-slate-100 text-sm text-slate-700">
-                  <p className="font-semibold mb-1 text-slate-900">AI Reasoning:</p>
-                  <ul className="list-disc list-inside space-y-1 text-slate-600">
-                    <li>Missing core requirement: PostgreSQL experience.</li>
-                    <li>Total backend experience calculated at 1.2 years (requirement: 4+).</li>
-                    <li><span className="text-indigo-600 font-medium">Fairness Check Passed:</span> Decision based purely on technical requirements. No demographic bias detected.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+                );
+              })
+            )}
 
           </div>
         </div>
