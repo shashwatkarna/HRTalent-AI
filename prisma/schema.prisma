@@ -101,8 +101,63 @@ model EmployeeProfile {
   manager        EmployeeProfile?  @relation("ManagerToEmployee", fields: [managerId], references: [id])
   directReports  EmployeeProfile[] @relation("ManagerToEmployee")
 
+  // Features
+  attendances    Attendance[]
+  leaveRequests  LeaveRequest[]
+  payslips       Payslip[]
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+// ------------------------------------------------------------------
+// Attendance, Leave, Payroll
+// ------------------------------------------------------------------
+
+model Attendance {
+  id                String          @id @default(cuid())
+  employeeProfileId String
+  employeeProfile   EmployeeProfile @relation(fields: [employeeProfileId], references: [id], onDelete: Cascade)
+  
+  date              DateTime        @db.Date
+  clockIn           DateTime?
+  clockOut          DateTime?
+  status            String          @default("PRESENT") // PRESENT, ABSENT, HALF_DAY
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+model LeaveRequest {
+  id                String          @id @default(cuid())
+  employeeProfileId String
+  employeeProfile   EmployeeProfile @relation(fields: [employeeProfileId], references: [id], onDelete: Cascade)
+  
+  type              String          // SICK, VACATION, PERSONAL
+  startDate         DateTime        @db.Date
+  endDate           DateTime        @db.Date
+  reason            String?         @db.Text
+  status            String          @default("PENDING") // PENDING, APPROVED, REJECTED
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+model Payslip {
+  id                String          @id @default(cuid())
+  employeeProfileId String
+  employeeProfile   EmployeeProfile @relation(fields: [employeeProfileId], references: [id], onDelete: Cascade)
+  
+  month             String          // "2026-10"
+  basicSalary       Float
+  allowances        Float           @default(0)
+  deductions        Float           @default(0)
+  netSalary         Float
+  status            String          @default("PAID") // PAID, PENDING
+  pdfUrl            String?
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }
 
 // ------------------------------------------------------------------
@@ -171,4 +226,3 @@ model AIEvaluation {
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
 }
-

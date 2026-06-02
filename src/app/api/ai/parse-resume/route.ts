@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { db } from "@/lib/prisma";
+// @ts-expect-error - no default export
 import pdfParse from "pdf-parse";
 
 // Initialize Gemini SDK

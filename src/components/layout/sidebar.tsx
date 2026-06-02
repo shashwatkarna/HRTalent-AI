@@ -1,10 +1,11 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   Home, Users, CalendarDays, FileText, Settings, UserPlus, 
-  BrainCircuit, LayoutDashboard, BarChart3, Clock, Wallet, Mic, Search
+  BrainCircuit, LayoutDashboard, BarChart3, Clock, Wallet, Mic, Search, Menu
 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -13,7 +14,7 @@ import { useDashboard } from './DashboardProvider';
 export default function Sidebar({ role }: { role: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isSidebarOpen } = useDashboard();
+  const { isSidebarOpen, toggleSidebar } = useDashboard();
 
   let menuItems: any[] = [];
 
@@ -62,11 +63,17 @@ export default function Sidebar({ role }: { role: string }) {
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div className="h-16 flex items-center px-6 border-b border-slate-800 font-bold text-xl tracking-tight gap-2 font-heading">
-        <div className="text-blue-500">
-          <BrainCircuit className="w-6 h-6" />
+      <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800 font-bold text-xl tracking-tight gap-2 font-heading">
+        <div className="flex items-center gap-2">
+          <Image src="/logo.png" alt="AITalent HR Logo" width={32} height={32} className="object-contain" />
+          AITalent<span className="text-slate-400 font-normal text-sm">HR</span>
         </div>
-        AITalent<span className="text-slate-400 font-normal text-sm">HR</span>
+        <button 
+          onClick={toggleSidebar}
+          className="p-1 -mr-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
       </div>
 
       <div className="px-6 py-4 border-b border-slate-800">

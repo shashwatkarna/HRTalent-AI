@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./sidebar";
 import Header from "./header";
 import { useDashboard } from "./DashboardProvider";
+import { usePathname, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 interface DashboardLayoutWrapperProps {
   children: React.ReactNode;
@@ -12,6 +14,47 @@ interface DashboardLayoutWrapperProps {
 
 export default function DashboardLayoutWrapper({ children, user }: DashboardLayoutWrapperProps) {
   const { isSidebarOpen, closeSidebar } = useDashboard();
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (!pathname) return;
+
+    let targetRoute = "/employee";
+    let isPathValid = false;
+
+    if (user.role === "ADMIN" || user.role === "MANAGEMENT") {
+      targetRoute = "/admin";
+      isPathValid = pathname.startsWith("/admin");
+    } else if (user.role === "HR_RECRUITER") {
+      targetRoute = "/hr";
+      isPathValid = pathname.startsWith("/hr");
+    } else if (user.role === "SENIOR_MANAGER") {
+      targetRoute = "/manager";
+      isPathValid = pathname.startsWith("/manager");
+    } else {
+      targetRoute = "/employee";
+      isPathValid = pathname.startsWith("/employee");
+    }
+
+    if (!isPathValid) {
+      // Use replace instead of push so they don't get stuck in a back-button loop
+      router.replace(targetRoute);
+    } else {
+      setIsAuthorized(true);
+    }
+  }, [pathname, user.role, router]);
+
+  // Prevent rendering the dashboard content if they are on the wrong route
+  if (!isAuthorized) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-50">
+        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+        <span className="ml-3 text-slate-500 font-medium">Verifying access...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">

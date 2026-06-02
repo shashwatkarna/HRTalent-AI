@@ -40,9 +40,10 @@ export async function addEmployee(formData: FormData) {
         // Automatically create an empty EmployeeProfile for them
         employeeProfile: {
           create: {
-            department: "Unassigned",
-            position: role.replace("_", " "),
+            designation: role.replace("_", " "),
             salary: 0,
+            employmentStatus: "ACTIVE",
+            employeeId: `EMP-${Math.floor(Math.random() * 10000)}`,
           }
         }
       },

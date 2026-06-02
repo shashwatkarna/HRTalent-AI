@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { login } from "@/app/login/actions";
-import { BrainCircuit, AlertCircle } from "lucide-react";
+import { login } from "./actions";
+import { AlertCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
@@ -24,8 +25,8 @@ export default function LoginPage() {
       <div className="bg-white p-10 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] w-full max-w-md border border-slate-100">
         
         <div className="flex flex-col items-center justify-center mb-8">
-          <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
-            <BrainCircuit className="w-7 h-7" />
+          <div className="mb-4">
+            <Image src="/logo.png" alt="AITalent HR Logo" width={48} height={48} className="object-contain" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Welcome Back</h1>
           <p className="text-sm text-slate-500 mt-1">Sign in to your enterprise account</p>

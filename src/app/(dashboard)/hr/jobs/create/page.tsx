@@ -2,7 +2,7 @@ import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createJobPosting } from "@/app/actions/job-actions";
+import { createJobPosting } from "@/actions/job-actions";
 
 export default function CreateJobPostingPage() {
   return (

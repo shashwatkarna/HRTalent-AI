@@ -15,8 +15,7 @@ if (globalForPrisma.prisma) {
   const adapter = new PrismaPg(pool);
   
   db = new PrismaClient({ 
-    adapter,
-    log: ["query"] 
+    adapter 
   });
   
   if (process.env.NODE_ENV !== "production") {

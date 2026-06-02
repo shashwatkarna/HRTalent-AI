@@ -57,14 +57,13 @@ export function CandidateActionButtons({ candidateId, status }: { candidateId: s
 
   // If INTERVIEWED or beyond, show Review button
   return (
-    <Button 
-      size="sm" 
-      className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-      asChild
-    >
-      <Link href={`/hr/candidates/${candidateId}`}>
+    <Link href={`/hr/candidates/${candidateId}`}>
+      <Button 
+        size="sm" 
+        className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+      >
         Review AI Results <ChevronRight className="w-4 h-4 ml-1" />
-      </Link>
-    </Button>
+      </Button>
+    </Link>
   );
 }

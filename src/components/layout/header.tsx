@@ -4,19 +4,21 @@ import { Bell, Search, Menu } from 'lucide-react';
 import { useDashboard } from './DashboardProvider';
 
 export default function Header({ user }: { user?: any }) {
-  const { toggleSidebar } = useDashboard();
+  const { isSidebarOpen, toggleSidebar } = useDashboard();
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
       
       <div className="flex items-center gap-4">
-        {/* Hamburger Toggle */}
-        <button 
-          onClick={toggleSidebar}
-          className="p-2 -ml-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
+        {/* Hamburger Toggle - Only show in header when sidebar is closed on desktop, or always on mobile */}
+        {!isSidebarOpen && (
+          <button 
+            onClick={toggleSidebar}
+            className="p-2 -ml-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
 
         {/* Search Bar */}
         <div className="hidden md:flex items-center w-96 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
