@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { db } from "@/lib/prisma";
-// @ts-expect-error - no default export
-import pdfParse from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 
 // Initialize Gemini SDK
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -22,12 +21,15 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(arrayBuffer);
     
     let pdfText = "";
+    const parser = new PDFParse({ data: buffer });
     try {
-      const pdfData = await pdfParse(buffer);
+      const pdfData = await parser.getText();
       pdfText = pdfData.text;
     } catch (parseError) {
       console.error("PDF Parse Error:", parseError);
       return NextResponse.json({ error: "Failed to read the PDF file. Make sure it is a valid text-based PDF." }, { status: 400 });
+    } finally {
+      await parser.destroy();
     }
 
     if (!pdfText || pdfText.trim().length === 0) {

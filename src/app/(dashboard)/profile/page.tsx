@@ -1,18 +1,13 @@
 import { createClient } from "@/utils/supabase/server";
 import { db } from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { DashboardProvider } from "@/components/layout/DashboardProvider";
-import DashboardLayoutWrapper from "@/components/layout/DashboardLayoutWrapper";
+import ProfileClient from "./ProfileClient";
 
-export default async function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: { user: authUser } } = await supabase.auth.getUser();
 
-  if (!authUser) {
+  if (!authUser || !authUser.email) {
     redirect("/login");
   }
 
@@ -31,11 +26,5 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  return (
-    <DashboardProvider>
-      <DashboardLayoutWrapper user={user}>
-        {children}
-      </DashboardLayoutWrapper>
-    </DashboardProvider>
-  );
+  return <ProfileClient user={user} />;
 }

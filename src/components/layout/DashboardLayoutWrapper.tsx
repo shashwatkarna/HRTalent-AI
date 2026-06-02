@@ -26,16 +26,16 @@ export default function DashboardLayoutWrapper({ children, user }: DashboardLayo
 
     if (user.role === "ADMIN" || user.role === "MANAGEMENT") {
       targetRoute = "/admin";
-      isPathValid = pathname.startsWith("/admin");
+      isPathValid = pathname.startsWith("/admin") || pathname.startsWith("/profile");
     } else if (user.role === "HR_RECRUITER") {
       targetRoute = "/hr";
-      isPathValid = pathname.startsWith("/hr");
+      isPathValid = pathname.startsWith("/hr") || pathname.startsWith("/profile");
     } else if (user.role === "SENIOR_MANAGER") {
       targetRoute = "/manager";
-      isPathValid = pathname.startsWith("/manager");
+      isPathValid = pathname.startsWith("/manager") || pathname.startsWith("/profile");
     } else {
       targetRoute = "/employee";
-      isPathValid = pathname.startsWith("/employee");
+      isPathValid = pathname.startsWith("/employee") || pathname.startsWith("/profile");
     }
 
     if (!isPathValid) {
