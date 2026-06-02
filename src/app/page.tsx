@@ -1,293 +1,376 @@
-import { ArrowUpRight, BarChart3, BrainCircuit, CalendarCheck, FileBadge, LayoutDashboard, Mic, ShieldCheck, Users, Wallet } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { 
+  ArrowUpRight, BarChart3, BrainCircuit, CalendarCheck, FileBadge, 
+  LayoutDashboard, Mic, ShieldCheck, Users, Wallet, Menu, X, 
+  ChevronRight, CheckCircle2, UserCheck, RefreshCw
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function WelcomePage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <div className="min-h-screen font-sans text-slate-900 bg-white selection:bg-blue-100">
+    <div className="min-h-screen font-sans text-slate-900 bg-slate-50 selection:bg-blue-100 overflow-x-hidden">
       
-      {/* Top Section with Light Purple/Blue Background */}
-      <div className="bg-[#f8f9fc] pb-24 rounded-b-[40px] border-b border-slate-200/50">
-        
+      {/* Top Section with Modern Gradient */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#f0f4fd] via-[#f8faff] to-white pb-20 md:pb-32">
+        {/* Abstract Background Shapes */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-blue-100/40 blur-3xl" />
+          <div className="absolute top-40 -left-40 w-[500px] h-[500px] rounded-full bg-purple-100/40 blur-3xl" />
+        </div>
+
         {/* Navigation Bar */}
-        <nav className="w-full">
-          <div className="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
+        <nav className="fixed top-0 left-0 w-full z-[100] bg-white/70 backdrop-blur-md border-b border-slate-200/50 shadow-sm rounded-b-xl transition-all">
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 relative flex items-center justify-center text-blue-600">
-                <BrainCircuit className="w-6 h-6" />
-              </div>
-              <span className="text-xl font-bold tracking-tight text-blue-900">AITalent-HR</span>
+              <Image src="/logo.png" alt="AITalent HR Logo" width={40} height={40} className="object-contain" />
+              <span className="text-xl md:text-2xl font-bold tracking-tight text-slate-900 font-heading">
+                AITalent<span className="text-blue-600">HR</span>
+              </span>
             </div>
             
-            {/* Nav Links */}
-            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-500">
-              <span className="hover:text-slate-900 cursor-pointer transition-colors">Platform</span>
-              <span className="hover:text-slate-900 cursor-pointer transition-colors">Solutions</span>
-              <span className="hover:text-slate-900 cursor-pointer transition-colors">Resources</span>
-              <span className="hover:text-slate-900 cursor-pointer transition-colors">Pricing</span>
+            {/* Desktop Nav Links */}
+            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+              <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
+              <a href="#platform" className="hover:text-blue-600 transition-colors">How It Works</a>
+              <a href="#metrics" className="hover:text-blue-600 transition-colors">Metrics</a>
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-6">
-              <Link href="/login" className="text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors">
-                Login
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center gap-4">
+              <Link href="/login" className="text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
+                Log in
               </Link>
-              <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 px-5 rounded shadow-sm transition-colors">
+              <Link href="/login" className="bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold py-2.5 px-6 rounded-full shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5">
                 Get Started
               </Link>
             </div>
+
+            {/* Mobile Hamburger Toggle */}
+            <button 
+              className="md:hidden p-2 text-slate-600"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
+
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="md:hidden absolute top-20 left-0 w-full bg-white border-b border-slate-200 shadow-xl p-4 flex flex-col gap-4 animate-in slide-in-from-top-2 rounded-b-xl">
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-700 font-medium hover:bg-slate-50 rounded-lg">Features</a>
+              <a href="#platform" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-700 font-medium hover:bg-slate-50 rounded-lg">How It Works</a>
+              <a href="#metrics" onClick={() => setMobileMenuOpen(false)} className="px-4 py-3 text-slate-700 font-medium hover:bg-slate-50 rounded-lg">Metrics</a>
+              <div className="h-px bg-slate-100 my-2" />
+              <Link href="/login" className="px-4 py-3 text-center font-bold text-blue-600">Log in</Link>
+              <Link href="/login" className="px-4 py-3 bg-blue-600 text-white text-center font-bold rounded-lg shadow-sm">Get Started</Link>
+            </div>
+          )}
         </nav>
 
         {/* Hero Section */}
-        <main className="max-w-[1000px] mx-auto px-6 pt-16 flex flex-col items-center text-center">
+        <main className="relative z-10 max-w-[1000px] mx-auto px-4 md:px-6 pt-32 md:pt-40 flex flex-col items-center text-center">
           
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/50 border border-blue-200/50 text-blue-700 mb-8">
-            <SparklesIcon />
-            <span className="text-[11px] font-bold tracking-wider uppercase">Next-Gen Enterprise HRMS</span>
-          </div>
-
-          <h1 className="text-5xl md:text-[56px] font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-6">
-            AI-Powered Workforce Management & <br /> Recruitment Platform
+          <h1 className="font-heading text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1] mb-6 md:mb-8 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
+            Hire Smarter.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+              Manage Better.
+            </span>
           </h1>
 
-          <p className="max-w-2xl text-[17px] text-slate-600 leading-relaxed mb-10">
-            Transform complex organizational data into intuitive, actionable insights. 
-            Effortlessly control your entire HR lifecycle from intelligent screening to real-time performance analytics with high-precision AI.
+          <p className="max-w-2xl text-lg md:text-xl text-slate-600 leading-relaxed mb-10 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+            The all-in-one AI platform that transforms how you screen candidates, manage employee data, and analyze workforce performance.
           </p>
 
-          <div className="flex items-center gap-4">
-            <Link href="/login" className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-3 px-8 rounded shadow-sm transition-colors">
-              Get Started
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+            <Link href="/login" className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base font-semibold py-4 px-8 rounded-full shadow-lg shadow-blue-600/25 transition-all hover:shadow-xl hover:-translate-y-1">
+              Start Building Team
+              <ChevronRight className="w-5 h-5" />
             </Link>
-            <Link href="/login" className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-sm font-semibold py-3 px-8 rounded shadow-sm transition-colors">
-              Book a Demo
+            <Link href="#features" className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-base font-semibold py-4 px-8 rounded-full shadow-sm transition-all hover:-translate-y-1">
+              See How It Works
             </Link>
-          </div>
-
-          {/* Browser Mockup */}
-          <div className="mt-20 w-full max-w-[900px] bg-white rounded-t-xl border border-slate-200 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] overflow-hidden">
-            <div className="h-10 border-b border-slate-100 flex items-center px-4 gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-              <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-            </div>
-            <div className="p-8 bg-slate-50/50 min-h-[300px]">
-              <div className="grid grid-cols-3 gap-6 h-full">
-                <div className="col-span-1 h-32 bg-white rounded-lg border-l-2 border-indigo-200 border border-y-slate-100 border-r-slate-100 shadow-sm" />
-                <div className="col-span-1 h-32 bg-white rounded-lg border border-slate-100 shadow-sm" />
-                <div className="col-span-1 h-32 bg-white rounded-lg border border-slate-100 shadow-sm" />
-              </div>
-            </div>
           </div>
         </main>
       </div>
 
-      {/* Stats Section */}
-      <section className="border-b border-slate-200">
-        <div className="max-w-[1200px] mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-slate-100 text-center">
-          <div>
-            <div className="text-4xl font-bold text-blue-700 mb-2">5000+</div>
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Employees Managed</div>
+      {/* Ecosystem Section (Features) */}
+      <section id="features" className="bg-white py-20 md:py-32">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="mb-16 md:text-center flex flex-col md:items-center">
+            <h2 className="font-heading text-3xl md:text-5xl font-bold text-slate-900 mb-6 tracking-tight">The ultimate HR ecosystem.</h2>
+            <p className="text-lg text-slate-600 max-w-2xl leading-relaxed">
+              Replace outdated spreadsheets with a beautifully unified dashboard. From intelligent AI resume parsing to automated payroll, we have you covered.
+            </p>
           </div>
-          <div>
-            <div className="text-4xl font-bold text-purple-600 mb-2">95%</div>
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Faster Hiring</div>
-          </div>
-          <div>
-            <div className="text-4xl font-bold text-teal-600 mb-2">100%</div>
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">AI Powered Decisions</div>
-          </div>
-          <div className="flex flex-col items-center justify-center">
-            <ShieldCheck className="w-10 h-10 text-blue-600 mb-2" />
-            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Enterprise Ready</div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            {/* Core Feature 1 */}
+            <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all group">
+              <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <FileBadge className="w-7 h-7" />
+              </div>
+              <h3 className="font-heading text-xl font-bold text-slate-900 mb-3">AI Resume Screening</h3>
+              <p className="text-slate-500 leading-relaxed">
+                Instantly parse and rank thousands of applications using our proprietary NLP algorithms to find your ideal candidate.
+              </p>
+            </div>
+
+            {/* Core Feature 2 */}
+            <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:border-purple-200 transition-all group">
+              <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Mic className="w-7 h-7" />
+              </div>
+              <h3 className="font-heading text-xl font-bold text-slate-900 mb-3">Voice Interviews</h3>
+              <p className="text-slate-500 leading-relaxed">
+                Automated phone screens conducted by our AI assistant, analyzing communication skills and technical knowledge.
+              </p>
+            </div>
+
+            {/* Core Feature 3 */}
+            <div className="bg-slate-50 rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:border-emerald-200 transition-all group">
+              <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Wallet className="w-7 h-7" />
+              </div>
+              <h3 className="font-heading text-xl font-bold text-slate-900 mb-3">Smart Payroll</h3>
+              <p className="text-slate-500 leading-relaxed">
+                Error-free automated compensation cycles directly tied to attendance and performance metrics.
+              </p>
+            </div>
+
+            {/* Wide Feature */}
+            <div className="md:col-span-2 lg:col-span-3 bg-slate-900 rounded-3xl p-8 md:p-12 border border-slate-800 shadow-xl overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              <div className="relative z-10 max-w-xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-blue-400 mb-6">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span className="text-xs font-semibold tracking-wide uppercase">Enterprise Governance</span>
+                </div>
+                <h3 className="font-heading text-3xl font-bold text-white mb-4">Total Transparency</h3>
+                <p className="text-slate-400 leading-relaxed text-lg mb-8">
+                  Every AI decision is logged in the Governance Panel. Understand exactly why a candidate was ranked highly or rejected, ensuring unbiased and fair hiring practices.
+                </p>
+                <ul className="space-y-4">
+                  <li className="flex items-center gap-3 text-white font-medium">
+                    <CheckCircle2 className="w-5 h-5 text-blue-500" /> Granular Access Control
+                  </li>
+                  <li className="flex items-center gap-3 text-white font-medium">
+                    <CheckCircle2 className="w-5 h-5 text-blue-500" /> Real-time Audit Logs
+                  </li>
+                  <li className="flex items-center gap-3 text-white font-medium">
+                    <CheckCircle2 className="w-5 h-5 text-blue-500" /> Compliance Reporting
+                  </li>
+                </ul>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* Ecosystem Section */}
-      <section className="bg-[#fafbfc] py-24">
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">A complete ecosystem for modern HR</h2>
-            <p className="text-slate-600 max-w-2xl leading-relaxed">
-              Leverage high-density information presented with absolute clarity. Our suite integrates AI 
-              seamlessly to automate workflows and empower your human capital decisions.
-            </p>
-          </div>
+      {/* Technical Architecture Pipeline (How) */}
+      <section id="platform" className="bg-slate-50 py-20 md:py-32">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6">
+          <div className="w-full bg-slate-900 p-8 md:p-12 rounded-3xl border border-slate-800 shadow-2xl overflow-hidden relative">
+            {/* Abstract Background Grid for Tech Feel */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="relative z-10 text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 mb-4 text-xs font-bold uppercase tracking-widest">
+                <BrainCircuit className="w-4 h-4" /> Real-time Architecture
+              </div>
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-white mb-4">How the AI Engine Works</h2>
+              <p className="text-slate-400 max-w-2xl mx-auto">A sub-500ms latency pipeline powered by WebSockets, capturing audio, analyzing sentiment, and evaluating technical skills in real-time.</p>
+            </div>
             
-            {/* Card 1 */}
-            <div className="col-span-1 md:col-span-2 lg:col-span-1 bg-white rounded-xl border border-slate-200 border-l-[3px] border-l-blue-600 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-              <div className="mb-6">
-                <FileBadge className="w-6 h-6 text-purple-500" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">AI Resume Screening</h3>
-              <p className="text-xs text-slate-500 leading-relaxed relative z-10">
-                Instantly parse and rank thousands of applications using natural language processing to identify top candidates with precision.
-              </p>
-              <div className="absolute right-[-20px] bottom-[-20px] opacity-5">
-                <FileBadge className="w-32 h-32" />
-              </div>
-            </div>
+            {/* Animations */}
+            <style dangerouslySetInnerHTML={{__html: `
+              @keyframes dataFlow {
+                0% { left: 0%; opacity: 0; transform: scale(0.5); }
+                5% { opacity: 1; transform: scale(1); }
+                95% { opacity: 1; transform: scale(1); }
+                100% { left: 100%; opacity: 0; transform: scale(0.5); }
+              }
+              .animate-data-flow {
+                animation: dataFlow 3s infinite linear;
+              }
+              .animate-data-flow-delayed {
+                animation: dataFlow 3s infinite linear 1.5s;
+              }
+              @keyframes pulseRing {
+                0% { transform: scale(0.8); opacity: 0.5; }
+                100% { transform: scale(1.6); opacity: 0; }
+              }
+              .animate-pulse-ring {
+                animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+              }
+            `}} />
 
-            {/* Card 2 */}
-            <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow relative">
-              <div className="flex justify-between items-start mb-6">
-                <LayoutDashboard className="w-6 h-6 text-blue-500" />
-                <ArrowUpRight className="w-4 h-4 text-slate-300" />
+            {/* Architecture Diagram */}
+            <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 md:gap-0 mt-8">
+              
+              {/* Connecting Lines (Desktop only) */}
+              <div className="hidden md:block absolute top-[40px] left-[5%] right-[5%] h-[2px] bg-slate-800 z-0" />
+              
+              {/* Animated Data Packets */}
+              <div className="hidden md:block absolute top-[40px] left-[5%] right-[5%] h-[2px] z-0">
+                 <div className="absolute w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_12px_#60a5fa] top-1/2 -translate-y-1/2 -mt-[1px] animate-data-flow" />
+                 <div className="absolute w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_12px_#c084fc] top-1/2 -translate-y-1/2 -mt-[1px] animate-data-flow-delayed" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Real-Time Dashboards</h3>
-              <p className="text-xs text-slate-500 leading-relaxed max-w-sm">
-                Live visualization of organizational health, diversity metrics, and retention risks across all departments.
-              </p>
-            </div>
 
-            {/* Card 3 */}
-            <div className="col-span-1 bg-white rounded-xl border border-slate-200 border-l-[3px] border-l-purple-500 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="mb-6">
-                <Mic className="w-6 h-6 text-purple-500" />
+              {/* Node 1: Candidate Client */}
+              <div className="relative z-10 flex flex-col items-center group w-32 md:w-40">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-blue-500 rounded-full animate-pulse-ring" />
+                  <div className="w-20 h-20 md:w-20 md:h-20 bg-slate-900 border-2 border-slate-700 rounded-full flex items-center justify-center relative z-10 group-hover:border-blue-500 transition-colors shadow-lg shadow-blue-900/20">
+                    <Mic className="w-8 h-8 text-blue-400" />
+                  </div>
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="text-white font-bold mb-1 text-sm md:text-base">Candidate</div>
+                  <div className="text-[10px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded border border-slate-700">MediaRecorder</div>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">AI Voice Interviews</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Automated initial phone screens with conversational AI that assesses communication skills.
-              </p>
-            </div>
 
-            {/* Card 4 */}
-            <div className="col-span-1 bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="mb-6">
-                <Users className="w-6 h-6 text-blue-500" />
+              {/* Node 2: WebSockets */}
+              <div className="relative z-10 flex flex-col items-center group w-32 md:w-40">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-900 border-2 border-slate-700 rounded-xl rotate-45 flex items-center justify-center relative z-10 group-hover:border-purple-500 transition-colors shadow-lg shadow-purple-900/20">
+                  <div className="-rotate-45">
+                    <RefreshCw className="w-8 h-8 text-purple-400" />
+                  </div>
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="text-white font-bold mb-1 text-sm md:text-base">Socket.io</div>
+                  <div className="text-[10px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded border border-slate-700">WSS:// Stream</div>
+                  <div className="text-[9px] text-purple-400 mt-2 uppercase tracking-widest font-bold">Audio Blobs</div>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Recruitment Automation</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                End-to-end workflow automation from requisition to offer letter generation.
-              </p>
-            </div>
 
-            {/* Card 5 */}
-            <div className="col-span-1 md:col-span-2 bg-white rounded-xl border border-slate-200 border-l-[3px] border-l-blue-400 p-6 shadow-sm hover:shadow-md transition-shadow relative">
-              <div className="mb-6">
-                <BarChart3 className="w-6 h-6 text-blue-500" />
+              {/* Node 3: AI Core */}
+              <div className="relative z-10 flex flex-col items-center group w-40 md:w-48">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-pulse-ring" style={{ animationDelay: '0.5s' }} />
+                  <div className="w-24 h-24 md:w-24 md:h-24 bg-slate-900 border-2 border-emerald-500 rounded-2xl flex items-center justify-center relative z-10 shadow-lg shadow-emerald-900/40">
+                    <BrainCircuit className="w-10 h-10 text-emerald-400" />
+                  </div>
+                </div>
+                <div className="mt-5 text-center">
+                  <div className="text-white font-bold mb-2 text-sm md:text-base">AI NLP Engine</div>
+                  <div className="flex flex-col gap-1.5">
+                    <div className="text-[10px] text-slate-300 font-mono border border-slate-700 bg-slate-800/80 px-2 py-1 rounded">Deepgram STT</div>
+                    <div className="text-[10px] text-slate-300 font-mono border border-slate-700 bg-slate-800/80 px-2 py-1 rounded">OpenAI GPT-4o</div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Performance Analytics</h3>
-              <p className="text-xs text-slate-500 leading-relaxed mb-6">
-                Predictive modeling to identify high-potentials and flight risks based on continuous feedback data.
-              </p>
-              {/* Decorative line chart */}
-              <div className="absolute bottom-6 left-6 right-6 h-0.5 border-t border-dashed border-slate-200 flex justify-between items-center px-4">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-800" />
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-              </div>
-            </div>
 
-            {/* Card 6 */}
-            <div className="col-span-1 bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="mb-6">
-                <Users className="w-6 h-6 text-blue-600" />
+              {/* Node 4: Scoring & Sync */}
+              <div className="relative z-10 flex flex-col items-center group w-32 md:w-40">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-900 border-2 border-slate-700 rounded-xl flex items-center justify-center relative z-10 group-hover:border-amber-500 transition-colors shadow-lg shadow-amber-900/20">
+                  <BarChart3 className="w-8 h-8 text-amber-400" />
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="text-white font-bold mb-1 text-sm md:text-base">Scoring Engine</div>
+                  <div className="text-[10px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded border border-slate-700">Sentiment & Logic</div>
+                  <div className="text-[9px] text-amber-400 mt-2 uppercase tracking-widest font-bold">JSON Payload</div>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Employee Management</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Centralized repository for all staff records, compliance documents, and assets.
-              </p>
-            </div>
 
-            {/* Card 7 */}
-            <div className="col-span-1 bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="mb-6">
-                <Wallet className="w-6 h-6 text-blue-500" />
+              {/* Node 5: Dashboard */}
+              <div className="relative z-10 flex flex-col items-center group w-32 md:w-40">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-900 border-2 border-slate-700 rounded-full flex items-center justify-center relative z-10 group-hover:border-blue-500 transition-colors shadow-lg shadow-blue-900/20">
+                  <LayoutDashboard className="w-8 h-8 text-blue-400" />
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="text-white font-bold mb-1 text-sm md:text-base">HR Dashboard</div>
+                  <div className="text-[10px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded border border-slate-700">PostgreSQL DB</div>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Payroll</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Error-free, automated compensation cycles integrated with global tax engines.
-              </p>
-            </div>
 
-            {/* Card 8 */}
-            <div className="col-span-1 bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="mb-6">
-                <CalendarCheck className="w-6 h-6 text-blue-600" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Attendance</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Smart time-tracking and leave management with geofencing capabilities.
-              </p>
             </div>
+          </div>
+        </div>
+      </section>
 
+      {/* Stats Section (Metrics) */}
+      <section id="metrics" className="border-t border-b border-slate-200 bg-white">
+        <div className="max-w-[1200px] mx-auto px-6 py-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:divide-x divide-slate-100 text-center">
+          <div className="p-4 hover:-translate-y-1 transition-transform">
+            <div className="font-heading text-4xl md:text-5xl font-extrabold text-slate-900 mb-2">5k+</div>
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Active Users</div>
+          </div>
+          <div className="p-4 hover:-translate-y-1 transition-transform">
+            <div className="font-heading text-4xl md:text-5xl font-extrabold text-blue-600 mb-2">95%</div>
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Faster Screening</div>
+          </div>
+          <div className="p-4 hover:-translate-y-1 transition-transform">
+            <div className="font-heading text-4xl md:text-5xl font-extrabold text-purple-600 mb-2">24/7</div>
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">AI Assistants</div>
+          </div>
+          <div className="p-4 hover:-translate-y-1 transition-transform">
+            <div className="font-heading text-4xl md:text-5xl font-extrabold text-emerald-600 mb-2">100%</div>
+            <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">Enterprise Secure</div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#eff1f5] border-t border-slate-200 pt-16 pb-8">
-        <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-5 gap-8 mb-16">
-          <div className="col-span-2">
+      <footer className="bg-white pt-16 pb-8">
+        <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 mb-16">
+          <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 text-blue-600 flex items-center justify-center">
-                <BrainCircuit className="w-5 h-5" />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-blue-900">AITalent-HR</span>
+              <Image src="/logo.png" alt="AITalent HR Logo" width={32} height={32} className="object-contain" />
+              <span className="text-xl font-bold tracking-tight text-slate-900 font-heading">AITalent<span className="text-blue-600">HR</span></span>
             </div>
-            <p className="text-xs text-slate-500 max-w-xs leading-relaxed mb-6">
-              The enterprise standard for intelligent workforce management.
+            <p className="text-sm text-slate-500 max-w-xs leading-relaxed mb-6">
+              The enterprise standard for intelligent workforce management and recruitment automation.
             </p>
-            <div className="flex gap-4 text-slate-400">
-              <div className="w-6 h-6 bg-slate-300 rounded-full" />
-              <div className="w-6 h-6 bg-slate-300 rounded-full" />
-            </div>
           </div>
           
           <div>
-            <h4 className="font-bold text-xs text-slate-900 uppercase tracking-wider mb-4">Product</h4>
-            <ul className="space-y-3 text-xs text-slate-600">
-              <li className="hover:text-blue-600 cursor-pointer">Features</li>
-              <li className="hover:text-blue-600 cursor-pointer">Integrations</li>
-              <li className="hover:text-blue-600 cursor-pointer">Security</li>
-              <li className="hover:text-blue-600 cursor-pointer">Pricing</li>
+            <h4 className="font-bold text-sm text-slate-900 mb-4">Product</h4>
+            <ul className="space-y-3 text-sm text-slate-500">
+              <li className="hover:text-blue-600 cursor-pointer transition-colors">Features</li>
+              <li className="hover:text-blue-600 cursor-pointer transition-colors">Integrations</li>
+              <li className="hover:text-blue-600 cursor-pointer transition-colors">Security</li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold text-xs text-slate-900 uppercase tracking-wider mb-4">Resources</h4>
-            <ul className="space-y-3 text-xs text-slate-600">
-              <li className="hover:text-blue-600 cursor-pointer">Documentation</li>
-              <li className="hover:text-blue-600 cursor-pointer">Blog</li>
-              <li className="hover:text-blue-600 cursor-pointer">Case Studies</li>
-              <li className="hover:text-blue-600 cursor-pointer">API Reference</li>
+            <h4 className="font-bold text-sm text-slate-900 mb-4">Resources</h4>
+            <ul className="space-y-3 text-sm text-slate-500">
+              <li className="hover:text-blue-600 cursor-pointer transition-colors">Documentation</li>
+              <li className="hover:text-blue-600 cursor-pointer transition-colors">Blog</li>
+              <li className="hover:text-blue-600 cursor-pointer transition-colors">Case Studies</li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold text-xs text-slate-900 uppercase tracking-wider mb-4">Company</h4>
-            <ul className="space-y-3 text-xs text-slate-600">
-              <li className="hover:text-blue-600 cursor-pointer">About Us</li>
-              <li className="hover:text-blue-600 cursor-pointer">Careers</li>
-              <li className="hover:text-blue-600 cursor-pointer">Privacy Policy</li>
-              <li className="hover:text-blue-600 cursor-pointer">Terms of Service</li>
+            <h4 className="font-bold text-sm text-slate-900 mb-4">Company</h4>
+            <ul className="space-y-3 text-sm text-slate-500">
+              <li className="hover:text-blue-600 cursor-pointer transition-colors">About Us</li>
+              <li className="hover:text-blue-600 cursor-pointer transition-colors">Careers</li>
+              <li className="hover:text-blue-600 cursor-pointer transition-colors">Contact</li>
             </ul>
           </div>
         </div>
         
-        <div className="max-w-[1200px] mx-auto px-6 pt-8 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-500">
-          <p>© 2024 AITalent-HR. All rights reserved.</p>
+        <div className="max-w-[1200px] mx-auto px-6 pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <p>© {new Date().getFullYear()} AITalent-HR. All rights reserved.</p>
           <div className="flex items-center gap-2 font-medium">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
             All Systems Operational
           </div>
         </div>
       </footer>
     </div>
-  );
-}
-
-function SparklesIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-      <path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>
-    </svg>
   );
 }

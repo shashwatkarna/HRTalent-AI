@@ -8,10 +8,12 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useDashboard } from './DashboardProvider';
 
 export default function Sidebar({ role }: { role: string }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { isSidebarOpen } = useDashboard();
 
   let menuItems: any[] = [];
 
@@ -55,8 +57,12 @@ export default function Sidebar({ role }: { role: string }) {
   };
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-100 flex flex-col h-screen fixed top-0 left-0">
-      <div className="h-16 flex items-center px-6 border-b border-slate-800 font-bold text-xl tracking-tight gap-2">
+    <aside 
+      className={`w-64 bg-slate-900 text-slate-100 flex flex-col h-screen fixed top-0 left-0 z-50 transition-transform duration-300 ease-in-out ${
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      <div className="h-16 flex items-center px-6 border-b border-slate-800 font-bold text-xl tracking-tight gap-2 font-heading">
         <div className="text-blue-500">
           <BrainCircuit className="w-6 h-6" />
         </div>

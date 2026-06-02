@@ -8,8 +8,11 @@ export default async function AdminDashboardPage() {
   const totalCandidates = await db.candidate.count();
   
   // Calculate a simulated monthly payroll based on EmployeeProfiles (if data exists)
-  const profiles = await db.employeeProfile.findMany({ select: { salary: true } });
+  const profiles = await db.employeeProfile.findMany({ select: { salary: true, employmentStatus: true } });
   const monthlyPayroll = profiles.reduce((sum, profile) => sum + (profile.salary || 0), 0) / 12;
+
+  const terminatedProfiles = profiles.filter(p => p.employmentStatus === "TERMINATED").length;
+  const attritionRate = profiles.length > 0 ? Math.round((terminatedProfiles / profiles.length) * 100 * 10) / 10 : 0;
 
   const appliedCount = await db.candidate.count({ where: { status: "APPLIED" } });
   const screenedCount = await db.candidate.count({ where: { status: { in: ["SCREENED", "INTERVIEWED", "SELECTED", "HIRED"] } } });
@@ -69,9 +72,13 @@ export default async function AdminDashboardPage() {
             <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
               <TrendingDown className="w-5 h-5" />
             </div>
-            <span className="text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded">Needs attention</span>
+            <span className={`text-xs font-medium px-2 py-1 rounded ${
+              attritionRate > 5 ? "text-rose-600 bg-rose-50" : "text-emerald-600 bg-emerald-50"
+            }`}>
+              {attritionRate > 5 ? "Needs attention" : "Healthy"}
+            </span>
           </div>
-          <div className="text-3xl font-bold text-slate-900 mb-1">2.4%</div>
+          <div className="text-3xl font-bold text-slate-900 mb-1">{attritionRate}%</div>
           <div className="text-sm font-medium text-slate-500">Attrition Rate</div>
         </div>
 
