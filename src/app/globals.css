@@ -46,41 +46,119 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Overwrite Tailwind Slate colors with a refined, metallic slate gray */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+
+  /* Overwrite Tailwind Blue colors with an executive Navy/Royal corporate theme */
+  --color-blue-50: #f0f7ff;
+  --color-blue-100: #e0effe;
+  --color-blue-200: #bae0fd;
+  --color-blue-300: #7cc8fc;
+  --color-blue-400: #38abf8;
+  --color-blue-500: #0284c7;
+  --color-blue-600: #0f4c81; /* Pantone Executive Classic Blue */
+  --color-blue-700: #0b3c66;
+  --color-blue-800: #082d4d;
+  --color-blue-900: #062036;
+  --color-blue-950: #03111f;
+
+  /* Overwrite Tailwind Indigo with sophisticated Steel-Indigo shades */
+  --color-indigo-50: #f4f6fa;
+  --color-indigo-100: #e8ecf4;
+  --color-indigo-200: #cbd8e8;
+  --color-indigo-300: #9cb8d6;
+  --color-indigo-400: #6890c0;
+  --color-indigo-500: #406da0;
+  --color-indigo-600: #2c4e75;
+  --color-indigo-700: #203956;
+  --color-indigo-800: #16263b;
+  --color-indigo-900: #0f1a29;
+  --color-indigo-950: #080d14;
+
+  /* Overwrite Emerald with Pine-Teal for professional accents */
+  --color-emerald-50: #f0fdfa;
+  --color-emerald-100: #ccfbf1;
+  --color-emerald-200: #99f6e4;
+  --color-emerald-300: #5eead4;
+  --color-emerald-400: #2dd4bf;
+  --color-emerald-500: #14b8a6;
+  --color-emerald-600: #0d9488;
+  --color-emerald-700: #0f766e;
+  --color-emerald-800: #115e59;
+  --color-emerald-900: #134e4a;
+  --color-emerald-950: #042f2e;
+
+  /* Overwrite Amber to render as Executive Gold/Bronze */
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #d97706;
+  --color-amber-600: #b45309;
+  --color-amber-700: #92400e;
+  --color-amber-800: #78350f;
+  --color-amber-900: #451a03;
+  --color-amber-950: #290f02;
+
+  /* Overwrite Rose with Crimson/Burgundy */
+  --color-rose-50: #fff5f5;
+  --color-rose-100: #ffe3e3;
+  --color-rose-200: #ffc9c9;
+  --color-rose-300: #ffa8a8;
+  --color-rose-400: #ff8787;
+  --color-rose-500: #fa5252;
+  --color-rose-600: #e03131;
+  --color-rose-700: #c92a2a;
+  --color-rose-800: #9e1a1a;
+  --color-rose-900: #7a1212;
+  --color-rose-950: #4a0909;
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.99 0.005 240); /* Crisp ice-white */
+  --foreground: oklch(0.18 0.02 240);   /* Deep executive charcoal */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.18 0.02 240);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.18 0.02 240);
+  --primary: oklch(0.32 0.08 245);      /* Deep Corporate Navy */
+  --primary-foreground: oklch(0.99 0.005 240);
+  --secondary: oklch(0.96 0.015 240);   /* Soft Steel Blue */
+  --secondary-foreground: oklch(0.32 0.08 245);
+  --muted: oklch(0.95 0.01 240);
+  --muted-foreground: oklch(0.50 0.02 240);
+  --accent: oklch(0.96 0.015 240);
+  --accent-foreground: oklch(0.32 0.08 245);
+  --destructive: oklch(0.55 0.18 20);   /* Muted Crimson */
+  --border: oklch(0.91 0.01 240);       /* Clean Slate Border */
+  --input: oklch(0.91 0.01 240);
+  --ring: oklch(0.32 0.08 245 / 50%);
+  --chart-1: oklch(0.55 0.18 250);      /* Corporate Royal Blue */
+  --chart-2: oklch(0.65 0.14 180);      /* Corporate Teal */
+  --chart-3: oklch(0.48 0.16 280);      /* Indigo Accent */
+  --chart-4: oklch(0.45 0.10 230);      /* Steel Accent */
+  --chart-5: oklch(0.30 0.04 240);      /* Charcoal Accent */
+  --radius: 0.5rem;                     /* Slightly sharper, modern corporate border radius */
+  --sidebar: oklch(0.15 0.02 240);      /* Dark Navy Sidebar */
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.32 0.08 245);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent: oklch(1 0 0 / 8%);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.32 0.08 245);
 }
 
 .dark {
@@ -122,9 +200,52 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-slate-50 text-slate-800 antialiased font-sans selection:bg-blue-100 selection:text-blue-900;
   }
   html {
     @apply font-sans;
   }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight font-bold text-slate-900;
+  }
+  input[type="text"], input[type="email"], input[type="password"], input[type="tel"], select, textarea {
+    @apply border-slate-200 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 rounded-lg shadow-xs transition-all duration-150 outline-none;
+  }
+  table {
+    @apply border-collapse w-full;
+  }
+  thead th {
+    @apply font-heading tracking-wider uppercase text-[10px] font-bold text-slate-500 py-3.5 px-6 bg-slate-50/75 border-b border-slate-200/80;
+  }
+  tbody td {
+    @apply py-4 px-6 text-slate-700 align-middle;
+  }
+  tr {
+    @apply transition-colors duration-150;
+  }
+}
+
+/* Premium Corporate CSS Components */
+.corporate-card {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.corporate-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+}
+
+/* Dynamic gradient charts for professional display */
+.chart-bar-fill {
+  background: linear-gradient(to top, var(--color-blue-600), var(--color-blue-400));
+  border-radius: 4px 4px 0 0;
+  box-shadow: 0 2px 4px rgba(15, 76, 129, 0.1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.chart-bar-fill:hover {
+  background: linear-gradient(to top, var(--color-blue-700), var(--color-blue-500));
+  box-shadow: 0 4px 8px rgba(15, 76, 129, 0.2);
+  transform: translateY(-1px);
 }

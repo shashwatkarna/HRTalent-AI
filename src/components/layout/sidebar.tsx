@@ -44,6 +44,7 @@ export default function Sidebar({ role }: { role: string }) {
     // EMPLOYEE
     menuItems = [
       { name: 'My Profile', href: '/employee', icon: Home },
+      { name: 'Company Directory', href: '/employee/directory', icon: Users },
       { name: 'Attendance', href: '/employee/attendance', icon: Clock },
       { name: 'Leave requests', href: '/employee/leave', icon: CalendarDays },
       { name: 'Payroll', href: '/employee/payroll', icon: Wallet },

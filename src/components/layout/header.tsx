@@ -4,21 +4,198 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { format } from 'date-fns';
-import { Bell, Search, Menu, ChevronDown, User, LogOut, Calendar } from 'lucide-react';
+import { 
+  Bell, Search, Menu, ChevronDown, User, LogOut, Calendar, 
+  Wallet, Clock, Brain, Info, Check
+} from 'lucide-react';
 import { useDashboard } from './DashboardProvider';
 import Link from 'next/link';
+
+interface NotificationItem {
+  id: string;
+  type: 'leave' | 'payroll' | 'candidate' | 'ai' | 'attendance' | 'system';
+  title: string;
+  description: string;
+  time: string;
+  read: boolean;
+}
+
+const getNotificationStyles = (type: string) => {
+  switch (type) {
+    case 'payroll':
+      return { bg: 'bg-amber-50/70 text-amber-600', border: 'border-amber-100/50', icon: Wallet };
+    case 'leave':
+      return { bg: 'bg-emerald-50/70 text-emerald-600', border: 'border-emerald-100/50', icon: Calendar };
+    case 'attendance':
+      return { bg: 'bg-indigo-50/70 text-indigo-600', border: 'border-indigo-100/50', icon: Clock };
+    case 'candidate':
+      return { bg: 'bg-blue-50/70 text-blue-600', border: 'border-blue-100/50', icon: User };
+    case 'ai':
+      return { bg: 'bg-purple-50/70 text-purple-600', border: 'border-purple-100/50', icon: Brain };
+    default:
+      return { bg: 'bg-slate-100/70 text-slate-600', border: 'border-slate-200/50', icon: Info };
+  }
+};
+
+const generateNotifications = (user: any): NotificationItem[] => {
+  const list: NotificationItem[] = [];
+
+  if (!user) return list;
+
+  if (user.role === 'EMPLOYEE') {
+    // 1. Payslip notification
+    const payslips = user.employeeProfile?.payslips || [];
+    if (payslips.length > 0) {
+      list.push({
+        id: 'payroll-1',
+        type: 'payroll',
+        title: 'New Payslip Available',
+        description: `Your payslip for ${payslips[0].month} has been generated and is ready for download.`,
+        time: '2 hours ago',
+        read: false,
+      });
+    }
+
+    // 2. Leave notification
+    const leaveRequests = user.employeeProfile?.leaveRequests || [];
+    if (leaveRequests.length > 0) {
+      const latest = leaveRequests[0];
+      const start = latest.startDate ? new Date(latest.startDate) : null;
+      const startStr = start && !isNaN(start.getTime()) ? format(start, 'MMM dd') : '';
+      list.push({
+        id: 'leave-1',
+        type: 'leave',
+        title: `Leave Request ${latest.status}`,
+        description: `Your ${latest.type.toLowerCase()} leave request starting ${startStr} has been ${latest.status.toLowerCase()}.`,
+        time: '1 day ago',
+        read: false,
+      });
+    } else {
+      list.push({
+        id: 'leave-default',
+        type: 'leave',
+        title: 'Annual Leave Balance Updated',
+        description: 'You have 14 days of available annual leave. Request leave via the Leave portal.',
+        time: '3 days ago',
+        read: true,
+      });
+    }
+
+    // 3. Attendance clock in
+    list.push({
+      id: 'attendance-1',
+      type: 'attendance',
+      title: 'Clock In Successful',
+      description: 'You clocked in successfully today at 9:02 AM. Have a great day!',
+      time: '9 hours ago',
+      read: true,
+    });
+
+    // 4. Welcome notification
+    list.push({
+      id: 'welcome',
+      type: 'system',
+      title: 'Welcome to AITalent HR',
+      description: 'Explore your dashboard to see payroll records, request leave, or chat with the HR AI assistant.',
+      time: '5 days ago',
+      read: true,
+    });
+  } else if (user.role === 'HR_RECRUITER') {
+    list.push({
+      id: 'candidate-1',
+      type: 'candidate',
+      title: 'New Candidate Applied',
+      description: 'Sarah Jenkins has applied for the Senior Product Designer position.',
+      time: '45 mins ago',
+      read: false,
+    });
+    list.push({
+      id: 'ai-1',
+      type: 'ai',
+      title: 'AI Resume Screening Complete',
+      description: 'Gemini completed resume analysis for candidate Alex Rivera. Match Score: 92%.',
+      time: '3 hours ago',
+      read: false,
+    });
+    list.push({
+      id: 'system-recruiter',
+      type: 'system',
+      title: 'Voice Interview Pipeline Active',
+      description: 'AI Voice interviewing agent is ready for the new Software Engineer candidates.',
+      time: '1 day ago',
+      read: true,
+    });
+  } else if (user.role === 'ADMIN' || user.role === 'MANAGEMENT') {
+    list.push({
+      id: 'admin-1',
+      type: 'system',
+      title: 'AI Governance Model Synced',
+      description: 'The internal neural engine has successfully compiled employee compliance reports.',
+      time: '1 hour ago',
+      read: false,
+    });
+    list.push({
+      id: 'admin-leave',
+      type: 'leave',
+      title: 'New Leave Approval Request',
+      description: 'Employee David Miller has requested 3 days of sick leave starting June 15.',
+      time: '4 hours ago',
+      read: false,
+    });
+    list.push({
+      id: 'admin-payroll',
+      type: 'payroll',
+      title: 'Payroll Calculations Locked',
+      description: 'Payroll runs for June 2026 have been generated and locked for administrative review.',
+      time: '2 days ago',
+      read: true,
+    });
+  } else if (user.role === 'SENIOR_MANAGER') {
+    list.push({
+      id: 'manager-1',
+      type: 'leave',
+      title: 'Pending Leave Request',
+      description: 'You have a pending leave approval request from John Doe (Software Engineer).',
+      time: '30 mins ago',
+      read: false,
+    });
+    list.push({
+      id: 'manager-2',
+      type: 'system',
+      title: 'Team Attendance Summary',
+      description: 'Weekly team attendance is at 96.5% with 0 unscheduled absences reported.',
+      time: '1 day ago',
+      read: true,
+    });
+  }
+
+  return list;
+};
 
 export default function Header({ user }: { user?: any }) {
   const { isSidebarOpen, toggleSidebar } = useDashboard();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const notificationsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Close dropdown on click outside
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      setNotifications(generateNotifications(user));
+    }
+  }, [user]);
+
+  // Close dropdowns on click outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
+        setIsNotificationsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -33,12 +210,19 @@ export default function Header({ user }: { user?: any }) {
     router.push('/login');
   };
 
-  // Determine profile route based on user role
-  const profileHref = 
-    user?.role === 'ADMIN' || user?.role === 'MANAGEMENT' ? '/admin' :
-    user?.role === 'HR_RECRUITER' ? '/hr' :
-    user?.role === 'SENIOR_MANAGER' ? '/manager' :
-    '/employee';
+  const markAsRead = (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const clearAll = () => {
+    setNotifications([]);
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   const joiningDateFormatted = user?.employeeProfile?.joiningDate 
     ? format(new Date(user.employeeProfile.joiningDate), 'MMM dd, yyyy')
@@ -71,11 +255,90 @@ export default function Header({ user }: { user?: any }) {
 
       {/* Right Actions */}
       <div className="flex items-center gap-6">
-        <button className="relative text-slate-400 hover:text-slate-600 transition-colors">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-        </button>
         
+        {/* Notifications Dropdown */}
+        <div className="relative" ref={notificationsRef}>
+          <button 
+            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+            className="relative text-slate-400 hover:text-slate-600 transition-colors p-1.5 rounded-lg hover:bg-slate-50 focus:outline-none"
+          >
+            <Bell className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+            )}
+          </button>
+
+          {isNotificationsOpen && (
+            <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl border border-slate-200 shadow-xl z-50 overflow-hidden transition-all duration-200 ease-out origin-top-right animate-in fade-in slide-in-from-top-2">
+              {/* Notifications Header */}
+              <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                <h4 className="font-bold text-slate-800 text-sm">Notifications</h4>
+                {unreadCount > 0 && (
+                  <button 
+                    onClick={markAllAsRead}
+                    className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 focus:outline-none"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    Mark all as read
+                  </button>
+                )}
+              </div>
+
+              {/* Notifications List */}
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+                {notifications.length === 0 ? (
+                  <div className="p-8 text-center text-slate-400 flex flex-col items-center justify-center gap-2">
+                    <Bell className="w-8 h-8 text-slate-300 stroke-1" />
+                    <p className="text-xs font-semibold text-slate-700">All caught up!</p>
+                    <p className="text-[10px] text-slate-400">No new notifications for you right now.</p>
+                  </div>
+                ) : (
+                  notifications.map((item) => {
+                    const styles = getNotificationStyles(item.type);
+                    const Icon = styles.icon;
+                    return (
+                      <div 
+                        key={item.id} 
+                        onClick={() => markAsRead(item.id)}
+                        className={`p-4 flex gap-3 cursor-pointer transition-colors ${item.read ? 'hover:bg-slate-50/50' : 'bg-blue-50/20 hover:bg-blue-50/40'}`}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${styles.bg} ${styles.border}`}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex justify-between items-start gap-1">
+                            <h5 className={`text-xs truncate ${item.read ? 'font-semibold text-slate-700' : 'font-bold text-slate-900'}`}>
+                              {item.title}
+                            </h5>
+                            {!item.read && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0 mt-1.5"></span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed break-words">{item.description}</p>
+                          <span className="text-[9px] text-slate-400 font-medium block mt-1">{item.time}</span>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Notifications Footer */}
+              {notifications.length > 0 && (
+                <div className="p-2 border-t border-slate-100 bg-slate-50/50 flex justify-center">
+                  <button 
+                    onClick={clearAll}
+                    className="text-[11px] font-semibold text-slate-500 hover:text-slate-700 focus:outline-none"
+                  >
+                    Clear all notifications
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        
+        {/* Profile Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}

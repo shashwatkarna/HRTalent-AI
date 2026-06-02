@@ -148,7 +148,7 @@ export default async function AdminDashboardPage() {
           <div className="flex-1 flex items-end gap-2 h-40">
             {/* Simple CSS Bar Chart */}
             {[40, 60, 45, 80, 55, 90, 70, 85, 95, 60, 80, 85, 90].map((height, i) => (
-              <div key={i} className="flex-1 bg-blue-100 rounded-t-sm relative group hover:bg-blue-200 transition-colors" style={{ height: `${height}%` }}>
+              <div key={i} className="flex-1 chart-bar-fill relative group" style={{ height: `${height}%` }}>
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
                   {height}%
                 </div>
