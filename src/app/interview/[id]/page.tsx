@@ -43,8 +43,8 @@ export default function VoiceInterviewPage() {
     };
 
     fetchCandidate().then((candidateData) => {
-      // Connect to our Dedicated Express Backend
-      newSocket = io("http://localhost:3001", {
+      // Connect to our Unified Enterprise Python Backend
+      newSocket = io("http://localhost:8000", {
         query: { candidateId: params.id as string }
       });
       setSocket(newSocket);
@@ -175,7 +175,7 @@ export default function VoiceInterviewPage() {
             <h1 className="font-bold text-lg leading-tight">AI Technical Recruiter</h1>
             <div className="flex items-center gap-2 text-xs text-slate-400">
               <div className={`w-2 h-2 rounded-full ${isConnected ? "bg-emerald-500" : "bg-rose-500"}`} />
-              {isConnected ? "Connected to Backend (Port 3001)" : "Connecting..."}
+              {isConnected ? "Connected to Backend (Port 8000)" : "Connecting..."}
             </div>
           </div>
         </div>

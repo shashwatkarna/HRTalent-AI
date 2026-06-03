@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pdfplumber
+python-multipart
+google-generativeai
+pydantic
+python-socketio
+python-engineio
+requests

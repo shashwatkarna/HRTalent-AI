@@ -10,7 +10,8 @@ export function CandidateActionButtons({ candidateId, status }: { candidateId: s
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const interviewLink = `http://localhost:3000/interview/${candidateId}`;
+  // Use the new subdomain structure
+  const interviewLink = `http://interview.localhost:3000/${candidateId}`;
 
   const handleGenerateLink = async () => {
     setIsGenerating(true);
@@ -36,7 +37,7 @@ export function CandidateActionButtons({ candidateId, status }: { candidateId: s
         size="sm" 
         className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 border-none font-semibold"
       >
-        <Link2 className="w-4 h-4 mr-2" /> Generate Interview Link
+        <Link2 className="w-4 h-4 mr-2" /> Invite to AI Voice Interview
       </Button>
     );
   }
@@ -50,7 +51,7 @@ export function CandidateActionButtons({ candidateId, status }: { candidateId: s
         className="border-indigo-200 text-indigo-600 hover:bg-indigo-50 bg-white"
       >
         {copied ? <CheckCircle2 className="w-4 h-4 mr-2 text-emerald-500" /> : <Copy className="w-4 h-4 mr-2" />}
-        {copied ? "Copied Link!" : "Copy Interview Link"}
+        {copied ? "Link Copied!" : "Copy Interview Link"}
       </Button>
     );
   }
@@ -62,7 +63,7 @@ export function CandidateActionButtons({ candidateId, status }: { candidateId: s
         size="sm" 
         className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
       >
-        Review AI Results <ChevronRight className="w-4 h-4 ml-1" />
+        Review AI Interview <ChevronRight className="w-4 h-4 ml-1" />
       </Button>
     </Link>
   );
