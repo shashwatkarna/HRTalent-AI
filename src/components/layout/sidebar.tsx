@@ -22,6 +22,7 @@ export default function Sidebar({ role }: { role: string }) {
     menuItems = [
       { name: 'Overview', href: '/admin', icon: LayoutDashboard },
       { name: 'Employees', href: '/admin/employees', icon: Users },
+      { name: 'Company Directory', href: '/directory', icon: Users },
       { name: 'AI Governance', href: '/admin/governance', icon: BrainCircuit },
       { name: 'Payroll', href: '/admin/payroll', icon: Wallet },
       { name: 'Company Analytics', href: '/admin/analytics', icon: BarChart3 },
@@ -31,6 +32,7 @@ export default function Sidebar({ role }: { role: string }) {
       { name: 'Recruitment', href: '/hr', icon: Search },
       { name: 'Jobs', href: '/hr/jobs', icon: FileText },
       { name: 'Candidates', href: '/hr/candidates', icon: Users },
+      { name: 'Company Directory', href: '/directory', icon: Users },
       { name: 'Voice Interviews', href: '/hr/interviews', icon: Mic },
       { name: 'Offers & Approvals', href: '/hr/offers', icon: FileText },
       { name: 'AI Screening', href: '/hr/upload', icon: BrainCircuit },
@@ -39,14 +41,16 @@ export default function Sidebar({ role }: { role: string }) {
   } else if (role === 'SENIOR_MANAGER') {
     menuItems = [
       { name: 'Team Analytics', href: '/manager', icon: BarChart3 },
+      { name: 'Recruitment', href: '/manager/recruitment', icon: Search },
       { name: 'Approvals', href: '/manager/approvals', icon: CalendarDays },
       { name: 'Reviews', href: '/manager/reviews', icon: FileText },
+      { name: 'Company Directory', href: '/directory', icon: Users },
     ];
   } else {
     // EMPLOYEE
     menuItems = [
       { name: 'My Profile', href: '/employee', icon: Home },
-      { name: 'Company Directory', href: '/employee/directory', icon: Users },
+      { name: 'Company Directory', href: '/directory', icon: Users },
       { name: 'Attendance', href: '/employee/attendance', icon: Clock },
       { name: 'Leave requests', href: '/employee/leave', icon: CalendarDays },
       { name: 'Payroll', href: '/employee/payroll', icon: Wallet },

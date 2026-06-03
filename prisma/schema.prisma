@@ -92,6 +92,7 @@ model EmployeeProfile {
   joiningDate    DateTime?
   salary         Float?
   employmentStatus String @default("ACTIVE") // ACTIVE, ON_LEAVE, TERMINATED
+  attritionReason  String? // e.g., "Career Growth", "Compensation", "Other"
   
   departmentId   String?
   department     Department? @relation(fields: [departmentId], references: [id])
