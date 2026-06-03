@@ -118,8 +118,20 @@ export default async function CandidateDetailsPage({ params }: { params: Promise
               <h3 className="font-bold text-slate-900">Interview Transcript Summary</h3>
             </div>
             {candidate.status === "INTERVIEWED" || candidate.status === "SELECTED" ? (
-               <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 text-sm text-slate-600 leading-relaxed italic">
-                 {evalData?.aiSummary || "The candidate provided strong behavioral examples but struggled slightly with the depth of the technical architecture question. Overall communication was clear and professional."}
+               <div className="space-y-4">
+                 <div className="bg-slate-50 p-4 rounded-lg border border-slate-100 text-sm text-slate-600 leading-relaxed italic">
+                   <span className="font-semibold text-slate-900 block mb-1">AI Executive Summary:</span>
+                   {evalData?.aiSummary || "The candidate provided strong behavioral examples but struggled slightly with the depth of the technical architecture question. Overall communication was clear and professional."}
+                 </div>
+                 
+                 {evalData?.interviewTranscript && (
+                   <div className="mt-6 border-t border-slate-100 pt-4">
+                     <h4 className="font-semibold text-slate-900 mb-3">Raw Transcript Log</h4>
+                     <div className="bg-slate-900 p-4 rounded-lg border border-slate-800 text-sm text-slate-300 leading-relaxed max-h-96 overflow-y-auto font-mono whitespace-pre-wrap">
+                       {evalData.interviewTranscript}
+                     </div>
+                   </div>
+                 )}
                </div>
             ) : (
               <p className="text-sm text-slate-500">Transcript will appear here once the interview is concluded.</p>

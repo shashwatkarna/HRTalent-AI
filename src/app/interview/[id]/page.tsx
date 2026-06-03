@@ -140,6 +140,7 @@ export default function VoiceInterviewPage() {
     // Send the transcript and history to the Express Backend via WebSockets
     if (socket) {
       socket.emit("candidate_response", {
+        candidateId: params.id,
         text: transcript,
         history: messages
       });

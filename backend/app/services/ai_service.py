@@ -3,7 +3,13 @@ import json
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="../../.env")
+# Resolve absolute path to root .env file
+# __file__ is backend/app/services/ai_service.py
+# 3 levels up is the root folder
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+ENV_PATH = os.path.join(BASE_DIR, ".env")
+
+load_dotenv(dotenv_path=ENV_PATH)
 
 api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
