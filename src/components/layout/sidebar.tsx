@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   Home, Users, CalendarDays, FileText, Settings, UserPlus, 
-  BrainCircuit, LayoutDashboard, BarChart3, Clock, Wallet, Mic, Search, Menu
+  BrainCircuit, LayoutDashboard, BarChart3, Clock, Wallet, Mic, Search, Menu, Sparkles
 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -34,6 +34,7 @@ export default function Sidebar({ role }: { role: string }) {
       { name: 'Voice Interviews', href: '/hr/interviews', icon: Mic },
       { name: 'Offers & Approvals', href: '/hr/offers', icon: FileText },
       { name: 'AI Screening', href: '/hr/upload', icon: BrainCircuit },
+      { name: 'HR Copilot', href: '/employee/ai-assistant', icon: Sparkles },
     ];
   } else if (role === 'SENIOR_MANAGER') {
     menuItems = [

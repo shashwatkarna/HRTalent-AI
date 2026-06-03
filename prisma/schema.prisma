@@ -105,9 +105,50 @@ model EmployeeProfile {
   attendances    Attendance[]
   leaveRequests  LeaveRequest[]
   payslips       Payslip[]
+  
+  // Reviews
+  reviewsReceived PerformanceReview[] @relation("EmployeeReviews")
+  reviewsGiven    PerformanceReview[] @relation("ManagerReviewsGiven")
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model ReviewCycle {
+  id        String   @id @default(cuid())
+  name      String   // e.g., "Q1 2026 Performance Review"
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  status    String   @default("OPEN") // OPEN, CLOSED
+  
+  reviews   PerformanceReview[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PerformanceReview {
+  id              String   @id @default(cuid())
+  
+  employeeProfileId String
+  employeeProfile   EmployeeProfile @relation("EmployeeReviews", fields: [employeeProfileId], references: [id], onDelete: Cascade)
+  
+  managerId         String
+  manager           EmployeeProfile @relation("ManagerReviewsGiven", fields: [managerId], references: [id])
+  
+  reviewCycleId     String
+  reviewCycle       ReviewCycle     @relation(fields: [reviewCycleId], references: [id], onDelete: Cascade)
+  
+  rating            Int?      // 1 to 5 scale
+  managerComments   String?   @db.Text
+  aiSummary         String?   @db.Text
+  
+  status            String    @default("DRAFT") // DRAFT, SUBMITTED
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([employeeProfileId, reviewCycleId])
 }
 
 // ------------------------------------------------------------------
