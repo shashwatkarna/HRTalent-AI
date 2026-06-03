@@ -198,9 +198,24 @@ model Candidate {
   jobPosting      JobPosting       @relation(fields: [jobPostingId], references: [id])
   
   aiEvaluation    AIEvaluation?
+  offer           Offer?
   
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+}
+
+model Offer {
+  id           String    @id @default(cuid())
+  candidateId  String    @unique
+  candidate    Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  
+  salary       Float
+  designation  String
+  joiningDate  DateTime  @db.Date
+  status       String    @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model AIEvaluation {

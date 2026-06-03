@@ -2,14 +2,24 @@ import { db } from "@/lib/prisma";
 import { Search, User, PlayCircle, Bot, Mic, FileText, CheckCircle2, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { ClientSearch } from "@/components/ui/ClientSearch";
 
-export default async function VoiceInterviewsDashboard() {
+export default async function VoiceInterviewsDashboard({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const resolvedSearchParams = await searchParams;
+  const query = resolvedSearchParams.q || "";
+
   // Fetch candidates who have an AI Evaluation (meaning they completed or started the interview)
   const candidates = await db.candidate.findMany({
     where: {
       aiEvaluation: {
         isNot: null
-      }
+      },
+      ...(query ? {
+        OR: [
+          { name: { contains: query, mode: "insensitive" } },
+          { jobPosting: { title: { contains: query, mode: "insensitive" } } }
+        ]
+      } : {})
     },
     include: { 
       jobPosting: true,
@@ -34,14 +44,7 @@ export default async function VoiceInterviewsDashboard() {
         
         {/* Table Toolbar */}
         <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-          <div className="relative w-72">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search interviews..." 
-              className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-md text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-            />
-          </div>
+          <ClientSearch placeholder="Search interviews..." />
           <div className="text-sm text-slate-500 font-medium">
             Completed Interviews: {candidates.filter(c => c.status === 'INTERVIEWED' || c.status === 'SELECTED' || c.status === 'HIRED').length}
           </div>
