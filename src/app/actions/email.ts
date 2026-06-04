@@ -6,7 +6,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendInterviewInvite(candidateId: string, email: string, name: string) {
   try {
-    const interviewLink = `${process.env.NEXT_PUBLIC_SUPABASE_URL || "http://localhost:3000"}/interview/${candidateId}`;
+    // We use the subdomain format for the interview app
+    const interviewLink = process.env.NODE_ENV === "production" 
+      ? `https://interview.yourdomain.com/${candidateId}`
+      : `http://interview.localhost:3000/${candidateId}`;
     
     const { data, error } = await resend.emails.send({
       from: 'AITalent-HR <onboarding@resend.dev>', // resend.dev allows sending to verified emails for testing

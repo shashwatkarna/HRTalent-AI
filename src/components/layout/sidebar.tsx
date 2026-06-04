@@ -94,7 +94,7 @@ export default function Sidebar({ role }: { role: string }) {
         <div className="text-sm font-medium text-blue-400">{role.replace('_', ' ')}</div>
       </div>
 
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto scrollbar-hide">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;

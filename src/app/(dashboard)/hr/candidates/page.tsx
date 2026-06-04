@@ -109,7 +109,12 @@ export default async function CandidatesPipelinePage({ searchParams }: { searchP
                   </td>
                   <td className="px-6 py-4 text-right">
                      {/* Extracted to Client Component to handle copying links to clipboard */}
-                     <CandidateActionButtons candidateId={candidate.id} status={candidate.status} />
+                     <CandidateActionButtons 
+                        candidateId={candidate.id} 
+                        status={candidate.status} 
+                        candidateEmail={candidate.email}
+                        candidateName={candidate.name}
+                     />
                   </td>
                 </tr>
               ))}
