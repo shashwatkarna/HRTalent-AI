@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { CalendarDays, Wallet, UserCircle, Briefcase, FileText, Clock } from "lucide-react";
 import Link from "next/link";
 import { endOfMonth, format, differenceInDays } from "date-fns";
-import AttendanceClient from "./attendance/AttendanceClient";
+import ClockInClient from "./attendance/ClockInClient";
 
 export default async function EmployeeDashboardPage() {
   const supabase = await createClient();
@@ -278,9 +278,12 @@ export default async function EmployeeDashboardPage() {
           </div>
 
           <div className="pt-2">
-            <AttendanceClient 
-              clockInTime={todaysAttendance?.clockIn ? todaysAttendance.clockIn.toISOString() : null}
-              clockOutTime={todaysAttendance?.clockOut ? todaysAttendance.clockOut.toISOString() : null}
+            <ClockInClient 
+              employeeId={profile.id}
+              hasClockedIn={!!todaysAttendance?.clockIn}
+              hasClockedOut={!!todaysAttendance?.clockOut}
+              clockInTime={todaysAttendance?.clockIn ? format(new Date(todaysAttendance.clockIn), "h:mm a") : null}
+              clockOutTime={todaysAttendance?.clockOut ? format(new Date(todaysAttendance.clockOut), "h:mm a") : null}
             />
           </div>
         </div>

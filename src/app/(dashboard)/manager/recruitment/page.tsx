@@ -1,6 +1,7 @@
 import { db } from "@/lib/prisma";
 import { CheckCircle2, FileText, UserPlus, BrainCircuit, ExternalLink, Search } from "lucide-react";
 import Link from "next/link";
+import ExtendOfferButton from "./ExtendOfferButton";
 
 export default async function ManagerRecruitmentPage() {
   // Fetch candidates who have made it to the final stages of the funnel
@@ -86,9 +87,11 @@ export default async function ManagerRecruitmentPage() {
             )}
 
             <div className="mt-6 pt-4 border-t border-slate-100 flex gap-3">
-              <button className="flex-1 bg-slate-900 text-white rounded-lg px-4 py-2 font-medium hover:bg-slate-800 transition-colors shadow-sm">
-                Extend Offer
-              </button>
+              <ExtendOfferButton 
+                candidateId={candidate.id} 
+                candidateEmail={candidate.email} 
+                currentStatus={candidate.status} 
+              />
               <button className="flex-1 bg-white border border-slate-200 text-slate-700 rounded-lg px-4 py-2 font-medium hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
                 <FileText className="w-4 h-4" />
                 View Resume

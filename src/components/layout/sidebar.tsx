@@ -18,14 +18,22 @@ export default function Sidebar({ role }: { role: string }) {
 
   let menuItems: any[] = [];
 
+  const employeeFeatures = [
+    { name: 'My Attendance', href: '/employee/attendance', icon: Clock },
+    { name: 'My Leave', href: '/employee/leave', icon: CalendarDays },
+    { name: 'My Payslips', href: '/employee/payroll', icon: Wallet },
+    { name: 'AI HR Copilot', href: '/employee/ai-assistant', icon: BrainCircuit },
+  ];
+
   if (role === 'ADMIN' || role === 'MANAGEMENT') {
     menuItems = [
       { name: 'Overview', href: '/admin', icon: LayoutDashboard },
       { name: 'Employees', href: '/admin/employees', icon: Users },
       { name: 'Company Directory', href: '/directory', icon: Users },
       { name: 'AI Governance', href: '/admin/governance', icon: BrainCircuit },
-      { name: 'Payroll', href: '/admin/payroll', icon: Wallet },
+      { name: 'Global Payroll', href: '/admin/payroll', icon: Wallet },
       { name: 'Company Analytics', href: '/admin/analytics', icon: BarChart3 },
+      ...employeeFeatures
     ];
   } else if (role === 'HR_RECRUITER') {
     menuItems = [
@@ -36,7 +44,7 @@ export default function Sidebar({ role }: { role: string }) {
       { name: 'Voice Interviews', href: '/hr/interviews', icon: Mic },
       { name: 'Offers & Approvals', href: '/hr/offers', icon: FileText },
       { name: 'AI Screening', href: '/hr/upload', icon: BrainCircuit },
-      { name: 'HR Copilot', href: '/employee/ai-assistant', icon: Sparkles },
+      ...employeeFeatures
     ];
   } else if (role === 'SENIOR_MANAGER') {
     menuItems = [
@@ -45,16 +53,14 @@ export default function Sidebar({ role }: { role: string }) {
       { name: 'Approvals', href: '/manager/approvals', icon: CalendarDays },
       { name: 'Reviews', href: '/manager/reviews', icon: FileText },
       { name: 'Company Directory', href: '/directory', icon: Users },
+      ...employeeFeatures
     ];
   } else {
     // EMPLOYEE
     menuItems = [
       { name: 'My Profile', href: '/employee', icon: Home },
       { name: 'Company Directory', href: '/directory', icon: Users },
-      { name: 'Attendance', href: '/employee/attendance', icon: Clock },
-      { name: 'Leave requests', href: '/employee/leave', icon: CalendarDays },
-      { name: 'Payroll', href: '/employee/payroll', icon: Wallet },
-      { name: 'AI Assistant', href: '/employee/ai-assistant', icon: BrainCircuit },
+      ...employeeFeatures
     ];
   }
 

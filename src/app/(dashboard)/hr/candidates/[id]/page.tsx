@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, User, Mail, BrainCircuit, Activity, BarChart3, MessageSquareText, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import SendInviteButton from "./SendInviteButton";
 
 export default async function CandidateDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   // Fix Next.js 15+ promise unwrapping for params in server components
@@ -77,7 +78,12 @@ export default async function CandidateDetailsPage({ params }: { params: Promise
               <div className="text-center py-10">
                 <Activity className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                 <h4 className="font-medium text-slate-900">No Interview Data Yet</h4>
-                <p className="text-sm text-slate-500 mt-1">Generate the interview link and have the candidate complete it.</p>
+                <p className="text-sm text-slate-500 mt-1">Send an invitation to the candidate to complete their AI voice interview.</p>
+                <SendInviteButton 
+                  candidateId={candidate.id} 
+                  candidateEmail={candidate.email} 
+                  candidateName={candidate.name} 
+                />
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-6">

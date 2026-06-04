@@ -1,134 +1,129 @@
 import { db } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-import { FileText, Download, Wallet, TrendingUp } from "lucide-react";
-import { format } from "date-fns";
+import { Wallet, FileText, Download, DollarSign, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 export default async function EmployeePayrollPage() {
   const supabase = await createClient();
-  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user?.email) {
+    return <div>Not authenticated</div>;
+  }
 
-  if (!authUser) redirect("/login");
-
-  const user = await db.user.findUnique({
-    where: { email: authUser.email },
-    include: { employeeProfile: true }
+  // Find employee profile
+  const employee = await db.employeeProfile.findFirst({
+    where: { user: { email: user.email } },
+    include: {
+      payslips: {
+        orderBy: { month: 'desc' }
+      }
+    }
   });
 
-  if (!user?.employeeProfile) redirect("/login");
+  if (!employee) {
+    return <div>No Employee Profile Found</div>;
+  }
 
-  const payslips = await db.payslip.findMany({
-    where: { employeeProfileId: user.employeeProfile.id },
-    orderBy: { createdAt: "desc" }
-  });
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+  // Formatting utilities
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
   };
 
-  const totalYTD = payslips.reduce((sum, p) => sum + p.netSalary, 0);
-  const latestPayslip = payslips[0];
+  const getMonthName = (monthStr: string) => {
+    // monthStr is like "2026-10"
+    const [year, month] = monthStr.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+  };
+
+  const latestPayslip = employee.payslips[0];
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="p-8 max-w-7xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold font-heading text-slate-900 mb-2">Payroll & Compensation</h1>
-        <p className="text-slate-500">View your salary details and download payslips.</p>
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">My Payslips</h1>
+        <p className="text-slate-500 mt-2">View your salary details and download your monthly payslips.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Latest Payslip Summary */}
-        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
-          <div className="absolute -right-12 -top-12 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl"></div>
+      {latestPayslip ? (
+        <div className="bg-slate-900 text-white rounded-2xl p-8 shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl"></div>
           
-          <div className="flex items-center gap-3 mb-6 relative z-10">
-            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center border border-white/10">
-              <Wallet className="w-5 h-5 text-blue-400" />
+          <div className="relative z-10 flex-1">
+            <div className="flex items-center gap-2 text-emerald-400 mb-2 font-semibold">
+              <Wallet className="w-5 h-5" /> Latest Payroll ({getMonthName(latestPayslip.month)})
             </div>
-            <h2 className="font-bold text-lg">Last Pay ({latestPayslip ? format(new Date(latestPayslip.month + "-01"), "MMM yyyy") : "N/A"})</h2>
-          </div>
-
-          <div className="relative z-10">
-            <p className="text-slate-400 text-sm mb-1">Net Transfer Amount</p>
-            <h3 className="text-4xl font-bold mb-6">{latestPayslip ? formatCurrency(latestPayslip.netSalary) : "$0.00"}</h3>
-            
-            {latestPayslip && (
-              <div className="space-y-3 pt-6 border-t border-slate-700">
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Basic Salary</span>
-                  <span className="font-medium">{formatCurrency(latestPayslip.basicSalary)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Allowances</span>
-                  <span className="font-medium text-emerald-400">+{formatCurrency(latestPayslip.allowances)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Deductions</span>
-                  <span className="font-medium text-red-400">-{formatCurrency(latestPayslip.deductions)}</span>
-                </div>
+            <div className="text-5xl font-black tracking-tight mb-4">
+              {formatCurrency(latestPayslip.netSalary)}
+            </div>
+            <div className="flex gap-6 text-sm">
+              <div className="flex items-center gap-1 text-slate-300">
+                <ArrowUpRight className="w-4 h-4 text-emerald-400" />
+                Gross: {formatCurrency(latestPayslip.basicSalary + latestPayslip.allowances)}
               </div>
-            )}
+              <div className="flex items-center gap-1 text-slate-300">
+                <ArrowDownRight className="w-4 h-4 text-rose-400" />
+                Deductions: {formatCurrency(latestPayslip.deductions)}
+              </div>
+            </div>
+          </div>
+
+          <button className="relative z-10 bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2">
+            <Download className="w-4 h-4" /> Download Payslip
+          </button>
+        </div>
+      ) : (
+        <div className="bg-slate-50 border border-slate-200 border-dashed rounded-2xl p-12 text-center flex flex-col items-center">
+          <DollarSign className="w-12 h-12 text-slate-300 mb-4" />
+          <h3 className="text-lg font-bold text-slate-900">No Payslips Yet</h3>
+          <p className="text-slate-500 mt-2">Your payroll records will appear here once they are processed by the HR department.</p>
+        </div>
+      )}
+
+      {employee.payslips.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <h3 className="font-bold text-slate-900 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-slate-400" /> Payslip History
+            </h3>
+          </div>
+          
+          <div className="divide-y divide-slate-100">
+            {employee.payslips.map((payslip) => (
+              <div key={payslip.id} className="p-6 hover:bg-slate-50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
+                    <Wallet className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-lg">{getMonthName(payslip.month)}</h4>
+                    <p className="text-slate-500 text-sm">Processed on {new Date(payslip.createdAt).toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-8 bg-slate-50 px-6 py-3 rounded-xl border border-slate-100">
+                  <div className="text-center">
+                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Gross</div>
+                    <div className="font-semibold text-slate-700">{formatCurrency(payslip.basicSalary + payslip.allowances)}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Deductions</div>
+                    <div className="font-semibold text-rose-500">-{formatCurrency(payslip.deductions)}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Net Pay</div>
+                    <div className="font-black text-slate-900 text-lg">{formatCurrency(payslip.netSalary)}</div>
+                  </div>
+                </div>
+
+                <button className="text-indigo-600 hover:text-indigo-800 font-semibold text-sm flex items-center gap-1">
+                  <Download className="w-4 h-4" /> PDF
+                </button>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* YTD Summary */}
-        <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm flex flex-col justify-center">
-          <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-6">
-            <TrendingUp className="w-7 h-7" />
-          </div>
-          <p className="text-slate-500 font-medium mb-1">Year-to-Date Earnings</p>
-          <h3 className="text-4xl font-bold text-slate-900 mb-2">{formatCurrency(totalYTD)}</h3>
-          <p className="text-sm text-emerald-600 font-bold bg-emerald-50 px-3 py-1 rounded-full w-max mt-4">
-            Includes Basic, Bonus & Allowances
-          </p>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-8">
-        <div className="p-6 border-b border-slate-100 flex items-center gap-3">
-          <FileText className="w-5 h-5 text-slate-400" />
-          <h2 className="font-bold text-slate-900 text-lg">Payslip History</h2>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50 text-slate-500 text-sm border-b border-slate-100">
-                <th className="font-medium p-4 pl-6">Month</th>
-                <th className="font-medium p-4">Date Paid</th>
-                <th className="font-medium p-4">Net Salary</th>
-                <th className="font-medium p-4">Status</th>
-                <th className="font-medium p-4 pr-6 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-sm">
-              {payslips.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-500">No payslips generated yet.</td>
-                </tr>
-              ) : (
-                payslips.map(ps => (
-                  <tr key={ps.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="p-4 pl-6 font-bold text-slate-900">{format(new Date(ps.month + "-01"), "MMMM yyyy")}</td>
-                    <td className="p-4 text-slate-600">{format(new Date(ps.createdAt), "MMM d, yyyy")}</td>
-                    <td className="p-4 font-semibold text-slate-900">{formatCurrency(ps.netSalary)}</td>
-                    <td className="p-4">
-                      <span className="inline-flex items-center text-emerald-600 bg-emerald-50 px-2 py-1 rounded font-bold text-xs uppercase tracking-wider">
-                        {ps.status}
-                      </span>
-                    </td>
-                    <td className="p-4 pr-6 text-right">
-                      <button className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 font-semibold bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
-                        <Download className="w-4 h-4" /> Download PDF
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

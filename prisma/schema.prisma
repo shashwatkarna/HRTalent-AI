@@ -97,6 +97,7 @@ model EmployeeProfile {
   departmentId   String?
   department     Department? @relation(fields: [departmentId], references: [id])
   
+
   // For hierarchical reporting
   managerId      String?
   manager        EmployeeProfile?  @relation("ManagerToEmployee", fields: [managerId], references: [id])
