@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useDashboard } from './DashboardProvider';
 import Link from 'next/link';
+import SearchBarClient from './SearchBarClient';
 
 interface NotificationItem {
   id: string;
@@ -243,14 +244,7 @@ export default function Header({ user }: { user?: any }) {
         )}
 
         {/* Search Bar */}
-        <div className="hidden md:flex items-center w-96 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
-          <Search className="w-4 h-4 text-slate-400 mr-2 shrink-0" />
-          <input 
-            type="text" 
-            placeholder="Search candidates, jobs, or employees..." 
-            className="bg-transparent border-none outline-none text-sm w-full placeholder:text-slate-400"
-          />
-        </div>
+        <SearchBarClient userRole={user?.role} />
       </div>
 
       {/* Right Actions */}
