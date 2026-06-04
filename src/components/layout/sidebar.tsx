@@ -1,4 +1,5 @@
 "use client";
+import { useState } from 'react';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -15,6 +16,8 @@ export default function Sidebar({ role }: { role: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const { isSidebarOpen, toggleSidebar } = useDashboard();
+
+  const [isSelfServiceOpen, setIsSelfServiceOpen] = useState(false);
 
   let menuItems: any[] = [];
 
@@ -33,7 +36,6 @@ export default function Sidebar({ role }: { role: string }) {
       { name: 'AI Governance', href: '/admin/governance', icon: BrainCircuit },
       { name: 'Global Payroll', href: '/admin/payroll', icon: Wallet },
       { name: 'Company Analytics', href: '/admin/analytics', icon: BarChart3 },
-      ...employeeFeatures
     ];
   } else if (role === 'HR_RECRUITER') {
     menuItems = [
@@ -44,7 +46,6 @@ export default function Sidebar({ role }: { role: string }) {
       { name: 'Voice Interviews', href: '/hr/interviews', icon: Mic },
       { name: 'Offers & Approvals', href: '/hr/offers', icon: FileText },
       { name: 'AI Screening', href: '/hr/upload', icon: BrainCircuit },
-      ...employeeFeatures
     ];
   } else if (role === 'SENIOR_MANAGER') {
     menuItems = [
@@ -53,7 +54,6 @@ export default function Sidebar({ role }: { role: string }) {
       { name: 'Approvals', href: '/manager/approvals', icon: CalendarDays },
       { name: 'Reviews', href: '/manager/reviews', icon: FileText },
       { name: 'Company Directory', href: '/directory', icon: Users },
-      ...employeeFeatures
     ];
   } else {
     // EMPLOYEE
@@ -111,6 +111,42 @@ export default function Sidebar({ role }: { role: string }) {
             </Link>
           );
         })}
+
+        {role !== 'EMPLOYEE' && (
+          <div className="pt-4 mt-4 border-t border-slate-800">
+            <button 
+              onClick={() => setIsSelfServiceOpen(!isSelfServiceOpen)}
+              className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />
+                <span className="font-medium text-sm">Self Service</span>
+              </div>
+              <span className="text-xs text-slate-500">{isSelfServiceOpen ? '▼' : '▶'}</span>
+            </button>
+            
+            {isSelfServiceOpen && (
+              <div className="mt-1 ml-4 pl-4 border-l border-slate-800 space-y-1">
+                {employeeFeatures.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link 
+                      key={item.name} 
+                      href={item.href}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all group ${
+                        isActive ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-indigo-400'}`} />
+                      <span className="font-medium text-sm">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </nav>
 
       <div className="p-4 border-t border-slate-800">

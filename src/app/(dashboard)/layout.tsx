@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { DashboardProvider } from "@/components/layout/DashboardProvider";
 import DashboardLayoutWrapper from "@/components/layout/DashboardLayoutWrapper";
 
+import { RealtimeProvider } from "@/components/providers/RealtimeProvider";
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -34,7 +36,9 @@ export default async function DashboardLayout({
   return (
     <DashboardProvider>
       <DashboardLayoutWrapper user={user}>
-        {children}
+        <RealtimeProvider role={user.role}>
+          {children}
+        </RealtimeProvider>
       </DashboardLayoutWrapper>
     </DashboardProvider>
   );

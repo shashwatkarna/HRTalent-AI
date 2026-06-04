@@ -5,6 +5,7 @@ import { CalendarDays, Wallet, UserCircle, Briefcase, FileText, Clock } from "lu
 import Link from "next/link";
 import { endOfMonth, format, differenceInDays } from "date-fns";
 import ClockInClient from "./attendance/ClockInClient";
+import { OnboardingChecklist } from "./OnboardingChecklist";
 
 export default async function EmployeeDashboardPage() {
   const supabase = await createClient();
@@ -116,6 +117,10 @@ export default async function EmployeeDashboardPage() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
+      
+      {/* Onboarding Checklist for First-Time Logins */}
+      <OnboardingChecklist employeeName={user!.name?.split(" ")[0] || "Employee"} />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-blue-600 to-indigo-700 p-8 rounded-2xl text-white shadow-md">
         <div className="flex items-center gap-6">

@@ -1,6 +1,7 @@
 import { db } from "@/lib/prisma";
 import { BarChart3, Users, PieChart, Activity, Building2 } from "lucide-react";
 import { format, subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { ExportButtons } from "@/components/ui/ExportButtons";
 
 export default async function AdminAnalyticsPage() {
   // Fetch real department data
@@ -45,8 +46,8 @@ export default async function AdminAnalyticsPage() {
     select: { joiningDate: true, employmentStatus: true }
   });
 
-  const months = [];
-  const growthData = [];
+  const months: string[] = [];
+  const growthData: number[] = [];
 
   for (let i = 5; i >= 0; i--) {
     const monthDate = subMonths(now, i);
@@ -66,10 +67,13 @@ export default async function AdminAnalyticsPage() {
   const maxGrowth = Math.max(...growthData, 1);
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Company Analytics</h1>
-        <p className="text-slate-500 mt-2">Deep-dive into workforce distribution and company health.</p>
+    <div id="analytics-dashboard" className="p-8 max-w-7xl mx-auto space-y-8 bg-slate-50">
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Company Analytics</h1>
+          <p className="text-slate-500 mt-2">Deep-dive into workforce distribution and company health.</p>
+        </div>
+        <ExportButtons elementId="analytics-dashboard" filename="AITalent_Company_Analytics" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

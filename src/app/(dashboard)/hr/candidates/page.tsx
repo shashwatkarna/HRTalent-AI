@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AddCandidateForm } from "./AddCandidateForm";
 import { CandidateActionButtons } from "./CandidateActionButtons";
 import { ClientSearch } from "@/components/ui/ClientSearch";
+import { ExportButtons } from "@/components/ui/ExportButtons";
 
 export default async function CandidatesPipelinePage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const resolvedSearchParams = await searchParams;
@@ -34,10 +35,13 @@ export default async function CandidatesPipelinePage({ searchParams }: { searchP
           <p className="text-slate-500 mt-1">Manage applicants, schedule AI interviews, and review results.</p>
         </div>
         {/* We extract the form to a Client Component for interactivity */}
-        <AddCandidateForm />
+        <div className="flex items-center gap-3">
+          <ExportButtons elementId="candidates-pipeline-table" filename="AITalent_Candidates_Pipeline" />
+          <AddCandidateForm />
+        </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+      <div id="candidates-pipeline-table" className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         
         {/* Table Toolbar */}
         <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">

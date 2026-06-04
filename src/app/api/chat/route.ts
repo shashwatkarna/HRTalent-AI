@@ -29,6 +29,28 @@ const getPayrollSummarySchema: Schema = {
   required: ["month"],
 };
 
+const tools = [
+  {
+    functionDeclarations: [
+      {
+        name: "get_employee_master_dossier",
+        description: "Get a comprehensive dossier on any employee including their performance reviews, attendance, and details.",
+        parameters: getEmployeeMasterDossierSchema
+      },
+      {
+        name: "get_low_attendance",
+        description: "Get a list of employees with attendance below a certain threshold.",
+        parameters: getLowAttendanceSchema
+      },
+      {
+        name: "get_payroll_summary",
+        description: "Get a summary of the payroll for a specific month.",
+        parameters: getPayrollSummarySchema
+      }
+    ]
+  }
+];
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -192,7 +214,7 @@ Always respond using Markdown format for readability. Do not mention that you ar
         }
         
         // If we get here without an error, the request was successful
-        finalResponseText = response.text;
+        finalResponseText = response.text || "";
         break; 
 
       } catch (error: any) {

@@ -106,7 +106,7 @@ export async function globalSearch(query: string, userRole: string): Promise<Sea
           id: `job-${job.id}`,
           type: 'job',
           title: job.title,
-          subtitle: job.location,
+          subtitle: "Job Posting",
           href: '/hr/jobs'
         });
       });
