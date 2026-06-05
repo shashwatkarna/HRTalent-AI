@@ -75,7 +75,8 @@ export default function VoiceInterviewPage() {
     fetchCandidate().then((candidateData) => {
       if (!candidateData || candidateData.status !== "SCREENED") return;
 
-      newSocket = io("http://localhost:8000", {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+      newSocket = io(backendUrl, {
         query: { candidateId: params.id as string }
       });
       setSocket(newSocket);
