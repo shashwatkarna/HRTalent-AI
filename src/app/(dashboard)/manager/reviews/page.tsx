@@ -3,10 +3,18 @@ import { Star, FileText, CheckCircle2 } from "lucide-react";
 import ReviewSubmitForm from "./ReviewSubmitForm";
 import { format } from "date-fns";
 
+import { createClient } from "@/utils/supabase/server";
+
 export default async function ManagerReviewsPage() {
-  // Hardcode Mike Manager's ID for the demo
-  const managerProfile = await db.employeeProfile.findUnique({
-    where: { employeeId: 'EMP-003' },
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user?.email) {
+    return <div>Not authenticated</div>;
+  }
+
+  const managerProfile = await db.employeeProfile.findFirst({
+    where: { user: { email: user.email } },
     include: {
       directReports: {
         include: { user: true }

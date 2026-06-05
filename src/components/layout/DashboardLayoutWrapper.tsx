@@ -23,19 +23,22 @@ export default function DashboardLayoutWrapper({ children, user }: DashboardLayo
 
     let targetRoute = "/employee";
     let isPathValid = false;
+    
+    const sharedPaths = ["/profile", "/directory", "/employee"];
+    const isSharedPath = sharedPaths.some(p => pathname.startsWith(p));
 
     if (user.role === "ADMIN" || user.role === "MANAGEMENT") {
       targetRoute = "/admin";
-      isPathValid = pathname.startsWith("/admin") || pathname.startsWith("/profile");
+      isPathValid = isSharedPath || pathname.startsWith("/admin");
     } else if (user.role === "HR_RECRUITER") {
       targetRoute = "/hr";
-      isPathValid = pathname.startsWith("/hr") || pathname.startsWith("/profile");
+      isPathValid = isSharedPath || pathname.startsWith("/hr");
     } else if (user.role === "SENIOR_MANAGER") {
       targetRoute = "/manager";
-      isPathValid = pathname.startsWith("/manager") || pathname.startsWith("/profile");
+      isPathValid = isSharedPath || pathname.startsWith("/manager");
     } else {
       targetRoute = "/employee";
-      isPathValid = pathname.startsWith("/employee") || pathname.startsWith("/profile");
+      isPathValid = isSharedPath;
     }
 
     if (!isPathValid) {

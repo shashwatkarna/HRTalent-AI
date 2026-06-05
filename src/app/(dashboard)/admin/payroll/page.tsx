@@ -24,7 +24,7 @@ export default async function AdminPayrollPage() {
   const netMonthlyPayout = monthlyRunRate + estimatedMonthlyAllowances - estimatedMonthlyDeductions;
 
   const formatCurrency = (val: number) => 
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
 
   // Check if payroll was already run for the current month
   const currentMonth = format(new Date(), "yyyy-MM");

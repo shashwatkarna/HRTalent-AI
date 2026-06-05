@@ -22,7 +22,7 @@ export default async function AdminDashboardPage() {
   const getPercent = (count: number) => totalCandidates > 0 ? Math.round((count / totalCandidates) * 100) : 0;
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
   };
 
   return (
@@ -63,7 +63,7 @@ export default async function AdminDashboardPage() {
               <DollarSign className="w-5 h-5" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-slate-900 mb-1">{monthlyPayroll > 0 ? formatCurrency(monthlyPayroll) : "$0"}</div>
+          <div className="text-3xl font-bold text-slate-900 mb-1">{monthlyPayroll > 0 ? formatCurrency(monthlyPayroll) : "₹0"}</div>
           <div className="text-sm font-medium text-slate-500">Monthly Payroll Run</div>
         </div>
 

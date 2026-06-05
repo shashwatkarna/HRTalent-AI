@@ -11,9 +11,6 @@ export default async function DirectoryPage() {
 
   // Fetch all users with profiles & departments
   const users = await db.user.findMany({
-    where: {
-      role: { not: "ADMIN" }
-    },
     include: {
       employeeProfile: {
         include: {
@@ -24,5 +21,5 @@ export default async function DirectoryPage() {
     orderBy: { name: "asc" }
   });
 
-  return <DirectoryClient initialUsers={users} />;
+  return <DirectoryClient initialUsers={users} currentUserEmail={authUser.email} />;
 }

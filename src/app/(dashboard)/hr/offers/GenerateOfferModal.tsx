@@ -53,9 +53,9 @@ export function GenerateOfferModal({ candidateId, candidateName, roleTitle }: { 
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Annual Salary (USD)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Annual Salary (INR)</label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
                   <input 
                     type="number" 
                     name="salary" 

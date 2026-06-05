@@ -15,45 +15,51 @@ export async function GET() {
       auth: { autoRefreshToken: false, persistSession: false }
     });
 
-    const allowedEmails = [
-      "aman.admin@aitalent.com",
-      "aryan.manager@aitalent.com",
-      "shreya.hr@aitalent.com",
-      "shashwat.employee@aitalent.com"
-    ];
+    const keepEmail = "aman.admin@aitalent.com";
 
-    // Find all users not in the allowed list
-    const usersToDelete = await db.user.findMany({
+    // 1. Delete all non-user data
+    await db.performanceReview.deleteMany({});
+    await db.offer.deleteMany({});
+    await db.aIEvaluation.deleteMany({});
+    
+    await db.payslip.deleteMany({});
+    await db.attendance.deleteMany({});
+    await db.leaveRequest.deleteMany({});
+    await db.candidate.deleteMany({});
+    await db.jobPosting.deleteMany({});
+    await db.employeeProfile.deleteMany({
       where: {
-        email: { notIn: allowedEmails }
+        user: {
+          email: { not: keepEmail }
+        }
+      }
+    });
+    await db.department.deleteMany({});
+
+    // 2. Delete all users except keepEmail
+    const deletedUsers = await db.user.deleteMany({
+      where: {
+        email: { not: keepEmail }
       }
     });
 
-    let deletedCount = 0;
-
-    for (const user of usersToDelete) {
-      if (user.email) {
-        // Find them in Supabase Auth to delete them there too
-        const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers();
-        const authUser = authUsers?.users.find(u => u.email === user.email);
-        
-        if (authUser) {
+    // 3. Delete Supabase Auth users except keepEmail
+    const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers();
+    
+    let deletedAuthCount = 0;
+    if (authUsers?.users) {
+      for (const authUser of authUsers.users) {
+        if (authUser.email !== keepEmail) {
           await supabaseAdmin.auth.admin.deleteUser(authUser.id);
+          deletedAuthCount++;
         }
       }
-      
-      // Prisma will cascade delete EmployeeProfile, Account, Session due to schema setup
-      // Just to be safe, delete EmployeeProfile first if schema doesn't have cascade on that specific relation
-      // Actually schema says: user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-      // So db.user.delete is enough!
-      await db.user.delete({
-        where: { id: user.id }
-      });
-      
-      deletedCount++;
     }
 
-    return NextResponse.json({ success: true, message: `Removed ${deletedCount} extra accounts.` });
+    return NextResponse.json({ 
+      success: true, 
+      message: `Database cleaned! Deleted ${deletedUsers.count} Prisma Users and ${deletedAuthCount} Supabase Users. Kept: ${keepEmail}` 
+    });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message });
   }

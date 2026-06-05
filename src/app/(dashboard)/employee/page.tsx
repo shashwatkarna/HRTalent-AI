@@ -32,7 +32,7 @@ export default async function EmployeeDashboardPage() {
     }
   });
 
-  if (!user || user.role !== "EMPLOYEE") {
+  if (!user) {
     redirect("/login");
   }
 

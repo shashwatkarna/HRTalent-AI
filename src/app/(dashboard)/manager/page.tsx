@@ -2,11 +2,18 @@ import { db } from "@/lib/prisma";
 import { Users, UserCheck, Briefcase, TrendingUp } from "lucide-react";
 import Image from "next/image";
 
+import { createClient } from "@/utils/supabase/server";
+
 export default async function ManagerDashboard() {
-  // Hardcode Mike Manager's ID for the demo since we don't have full NextAuth session hooked up yet
-  // In a real app: const session = await getServerSession(); const currentUser = session.user;
-  const managerProfile = await db.employeeProfile.findUnique({
-    where: { employeeId: 'EMP-003' },
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user?.email) {
+    return <div>Not authenticated</div>;
+  }
+
+  const managerProfile = await db.employeeProfile.findFirst({
+    where: { user: { email: user.email } },
     include: {
       directReports: {
         include: {

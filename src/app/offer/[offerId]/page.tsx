@@ -66,7 +66,7 @@ export default async function OfferLetterPage({ params }: { params: Promise<{ of
             <div className="bg-slate-50 border border-slate-100 rounded-xl p-6 my-8 grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Base Salary</p>
-                <p className="text-2xl font-bold text-slate-900">${offer.salary.toLocaleString()}<span className="text-base font-normal text-slate-500"> / year</span></p>
+                <p className="text-2xl font-bold text-slate-900">₹{offer.salary.toLocaleString()}<span className="text-base font-normal text-slate-500"> / year</span></p>
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Start Date</p>
