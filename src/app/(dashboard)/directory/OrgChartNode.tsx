@@ -17,7 +17,7 @@ export default function OrgChartNode({ node, currentUserEmail }: { node: any, cu
 
   return (
     <li>
-      <div className={`org-node-card relative bg-white border ${isCurrentUser ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-md' : 'border-slate-200'} rounded-xl shadow-sm p-4 w-60 mx-auto inline-block text-center`}>
+      <div className={`org-node-card relative bg-white border ${isCurrentUser ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-md' : 'border-slate-200'} rounded-lg shadow-sm p-3 w-44 mx-auto inline-block text-center`}>
         {/* Highlight badge for current user */}
         {isCurrentUser && (
           <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider z-10">
@@ -26,24 +26,24 @@ export default function OrgChartNode({ node, currentUserEmail }: { node: any, cu
         )}
 
         {/* Avatar */}
-        <div className="w-12 h-12 rounded-full border border-slate-100 overflow-hidden bg-slate-50 flex items-center justify-center shadow-inner mx-auto mb-3">
+        <div className="w-10 h-10 rounded-full border border-slate-100 overflow-hidden bg-slate-50 flex items-center justify-center shadow-inner mx-auto mb-2">
           {node.image ? (
             <img src={node.image} alt={node.name} className="w-full h-full object-cover" />
           ) : (
-            <span className={`text-lg font-bold ${isCurrentUser ? 'text-blue-700' : 'text-slate-700'}`}>
+            <span className={`text-base font-bold ${isCurrentUser ? 'text-blue-700' : 'text-slate-700'}`}>
               {node.name ? node.name[0]?.toUpperCase() : "U"}
             </span>
           )}
         </div>
 
         {/* Info */}
-        <h3 className="font-bold text-slate-900 text-sm truncate" title={node.name}>{node.name || "Unknown"}</h3>
-        <p className="text-[11px] font-semibold text-blue-600 mt-1 flex items-center justify-center gap-1 truncate" title={profile.designation}>
+        <h3 className="font-bold text-slate-900 text-xs truncate" title={node.name}>{node.name || "Unknown"}</h3>
+        <p className="text-[10px] font-semibold text-blue-600 mt-0.5 flex items-center justify-center gap-1 truncate" title={profile.designation}>
           <Briefcase className="w-3 h-3 shrink-0" />
           <span className="truncate">{profile.designation || "Employee"}</span>
         </p>
 
-        <div className="w-full border-t border-slate-100 my-3"></div>
+        <div className="w-full border-t border-slate-100 my-2"></div>
 
         {/* Department */}
         <div className="text-[10px] font-medium text-slate-500 flex items-center justify-center gap-1 truncate" title={profile.department?.name}>
@@ -55,7 +55,7 @@ export default function OrgChartNode({ node, currentUserEmail }: { node: any, cu
         {node.children && node.children.length > 0 && (
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-3 flex items-center justify-center gap-1 w-full py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold transition-colors"
+            className="mt-2 flex items-center justify-center gap-1 w-full py-1 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded text-[10px] font-bold transition-colors"
           >
             <User className="w-3 h-3" />
             {node.children.length} Reports
