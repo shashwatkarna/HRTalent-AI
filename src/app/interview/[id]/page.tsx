@@ -18,8 +18,9 @@ export default function VoiceInterviewPage() {
   const [interviewComplete, setInterviewComplete] = useState(false);
   const [candidateName, setCandidateName] = useState("Candidate");
   
-  // Speech Recognition reference
-  const recognitionRef = useRef<any>(null);
+  // MediaRecorder references
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // Initialize Socket Connection & Fetch Candidate Data
@@ -76,41 +77,34 @@ export default function VoiceInterviewPage() {
         }
       });
 
+      newSocket.on("transcription_complete", (data: { text: string }) => {
+        setMessages(prev => [...prev, { role: "candidate", text: data.text }]);
+        // Keep isAiThinking true because AI is now generating the response
+      });
+
+      newSocket.on("ai_audio", (data: { audio: ArrayBuffer }) => {
+        // Play the received MP3 audio from the backend
+        try {
+          const blob = new Blob([data.audio], { type: "audio/mp3" });
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          audio.play();
+        } catch (error) {
+          console.error("Failed to play AI audio:", error);
+        }
+      });
+
       newSocket.on("disconnect", () => setIsConnected(false));
     });
     
     return () => {
       if (newSocket) newSocket.close();
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+        mediaRecorderRef.current.stop();
+      }
     };
   }, [params?.id]);
-
-  // Initialize Browser Speech Recognition (Web Speech API)
-  useEffect(() => {
-    if (typeof window !== "undefined" && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        handleCandidateSpoke(transcript);
-      };
-
-      recognition.onerror = (event: any) => {
-        console.error("Speech Recognition Error:", event.error);
-        setIsRecording(false);
-      };
-
-      recognition.onend = () => {
-        setIsRecording(false);
-      };
-
-      recognitionRef.current = recognition;
-    }
-  }, [messages]);
 
   // Auto-scroll chat
   useEffect(() => {
@@ -119,31 +113,47 @@ export default function VoiceInterviewPage() {
     }
   }, [messages, isAiThinking]);
 
-  const toggleRecording = () => {
+  const toggleRecording = async () => {
     if (isRecording) {
-      recognitionRef.current?.stop();
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+        mediaRecorderRef.current.stop();
+      }
       setIsRecording(false);
     } else {
-      if (recognitionRef.current) {
-        recognitionRef.current.start();
-        setIsRecording(true);
-      } else {
-        alert("Your browser does not support Speech Recognition. Please use Chrome/Edge.");
-      }
-    }
-  };
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+        audioChunksRef.current = [];
 
-  const handleCandidateSpoke = (transcript: string) => {
-    setMessages(prev => [...prev, { role: "candidate", text: transcript }]);
-    setIsAiThinking(true);
-    
-    // Send the transcript and history to the Express Backend via WebSockets
-    if (socket) {
-      socket.emit("candidate_response", {
-        candidateId: params.id,
-        text: transcript,
-        history: messages
-      });
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+          setIsAiThinking(true);
+          
+          if (socket) {
+            socket.emit("candidate_audio", {
+              candidateId: params?.id,
+              audio: audioBlob,
+              history: messages
+            });
+          }
+          
+          // Stop microphone access
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true);
+      } catch (err) {
+        console.error("Microphone access denied:", err);
+        alert("Please allow microphone access to complete the interview.");
+      }
     }
   };
 

@@ -8,3 +8,5 @@ python-socketio
 python-engineio
 requests
 python-dotenv
+faster-whisper
+edge-tts
