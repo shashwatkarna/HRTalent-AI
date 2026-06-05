@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   Home, Users, CalendarDays, FileText, Settings, UserPlus, 
-  BrainCircuit, LayoutDashboard, BarChart3, Clock, Wallet, Mic, Search, Menu, Sparkles
+  BrainCircuit, LayoutDashboard, BarChart3, Clock, Wallet, Mic, Search, Menu, Sparkles, Bot, UserCircle
 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -25,7 +25,7 @@ export default function Sidebar({ role }: { role: string }) {
     { name: 'My Attendance', href: '/employee/attendance', icon: Clock },
     { name: 'My Leave', href: '/employee/leave', icon: CalendarDays },
     { name: 'My Payslips', href: '/employee/payroll', icon: Wallet },
-    { name: 'AI HR Copilot', href: '/employee/ai-assistant', icon: BrainCircuit },
+    { name: 'AI HR Copilot', href: '/employee/ai-assistant', icon: Bot },
   ];
 
   if (role === 'ADMIN' || role === 'MANAGEMENT') {
@@ -42,11 +42,11 @@ export default function Sidebar({ role }: { role: string }) {
       { name: 'Recruitment', href: '/hr', icon: Search },
       { name: 'Jobs', href: '/hr/jobs', icon: FileText },
       { name: 'Candidates', href: '/hr/candidates', icon: Users },
-      { name: 'Company Directory', href: '/directory', icon: Users },
       { name: 'Voice Interviews', href: '/hr/interviews', icon: Mic },
       { name: 'Offers & Approvals', href: '/hr/offers', icon: FileText },
       { name: 'Action Requests', href: '/hr/requests', icon: Settings },
       { name: 'AI Screening', href: '/hr/upload', icon: BrainCircuit },
+      { name: 'Company Directory', href: '/directory', icon: Users },
     ];
   } else if (role === 'SENIOR_MANAGER') {
     menuItems = [
@@ -120,7 +120,7 @@ export default function Sidebar({ role }: { role: string }) {
               className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-all group"
             >
               <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />
+                <UserCircle className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300" />
                 <span className="font-medium text-sm">Self Service</span>
               </div>
               <span className="text-xs text-slate-500">{isSelfServiceOpen ? '▼' : '▶'}</span>

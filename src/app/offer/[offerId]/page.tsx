@@ -77,7 +77,7 @@ export default async function OfferLetterPage({ params }: { params: Promise<{ of
             </div>
 
             <p>
-              As a full-time employee, you will be eligible for our comprehensive benefits package, which includes health insurance, dental and vision coverage, a 401(k) matching program, and unlimited paid time off.
+              As a full-time employee, you will be eligible for our comprehensive benefits package, which includes health insurance, dental and vision coverage, a 401(k) matching program, and 14 days of paid time off.
             </p>
 
             <p>

@@ -63,8 +63,8 @@ export default async function LeavePage() {
           <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
             <Coffee className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Personal Leave</h3>
-          <div className="text-4xl font-black text-slate-900 mb-1">Unlimited</div>
+          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Annual Leave</h3>
+          <div className="text-4xl font-black text-slate-900 mb-1">14</div>
           <div className="text-sm font-medium text-slate-500">Subject to manager approval</div>
         </div>
       </div>

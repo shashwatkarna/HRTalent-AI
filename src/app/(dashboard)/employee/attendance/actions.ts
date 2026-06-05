@@ -33,7 +33,7 @@ export async function clockInAction(employeeId: string) {
     });
   }
 
-  revalidatePath("/employee/attendance");
+  revalidatePath("/", "layout");
 }
 
 export async function clockOutAction(employeeId: string) {
@@ -54,5 +54,5 @@ export async function clockOutAction(employeeId: string) {
     });
   }
 
-  revalidatePath("/employee/attendance");
+  revalidatePath("/", "layout");
 }
