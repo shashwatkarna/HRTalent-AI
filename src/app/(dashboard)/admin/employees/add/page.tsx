@@ -114,7 +114,7 @@ export default function AddEmployeePage() {
                 <input type="radio" name="role" value="HR_RECRUITER" className="w-4 h-4 text-blue-600" />
                 <div>
                   <div className="font-semibold text-slate-900 text-sm">HR Recruiter</div>
-                  <div className="text-xs text-slate-500 mt-0.5">Access to Candidate Pipelines and AI interview tools.</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Access to Talent Acquisition and AI interview tools.</div>
                 </div>
               </label>
 

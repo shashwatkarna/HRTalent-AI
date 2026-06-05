@@ -17,6 +17,10 @@ export default async function ProfilePage() {
       employeeProfile: {
         include: {
           department: true,
+          reviewsReceived: {
+            orderBy: { createdAt: "desc" },
+            take: 1
+          }
         },
       },
     },

@@ -56,3 +56,20 @@ export async function runMonthlyPayroll(month: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function updateEmployeeSalary(employeeProfileId: string, newSalary: number) {
+  try {
+    await db.employeeProfile.update({
+      where: { id: employeeProfileId },
+      data: { salary: newSalary }
+    });
+
+    // Revalidate the payroll page to update all calculations instantly
+    revalidatePath("/admin/payroll");
+    
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating salary:", error);
+    return { success: false, error: error.message };
+  }
+}

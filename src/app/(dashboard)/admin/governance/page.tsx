@@ -1,5 +1,6 @@
 import { BrainCircuit, ShieldCheck, Scale, FileSearch, AlertTriangle } from "lucide-react";
 import { db } from "@/lib/prisma";
+import GovernanceExportButton from "@/components/admin/GovernanceExportButton";
 
 export default async function AIGovernancePage() {
   const evaluations = await db.aIEvaluation.findMany({
@@ -66,7 +67,7 @@ export default async function AIGovernancePage() {
             <h3 className="font-bold text-slate-900">Recent AI Decisions (Audit Log)</h3>
             <p className="text-xs text-slate-500 mt-1">A transparent ledger of why specific candidates were advanced or rejected by the AI.</p>
           </div>
-          <button className="text-sm text-blue-600 font-semibold hover:text-blue-700">Export Report</button>
+          <GovernanceExportButton evaluations={evaluations} />
         </div>
         
         <div className="p-6">

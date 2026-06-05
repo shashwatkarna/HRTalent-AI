@@ -36,7 +36,7 @@ export default async function HRRecruiterDashboard() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">AI Recruitment Command Center</h1>
-          <p className="text-slate-500 mt-1">Manage job postings and review AI-ranked candidate pipelines.</p>
+          <p className="text-slate-500 mt-1">Manage job postings and review AI-ranked talent acquisitions.</p>
         </div>
         
         <Link href="/hr/jobs/create">

@@ -4,7 +4,7 @@ import React, { useState, useRef, useTransition } from "react";
 import { format } from "date-fns";
 import { 
   Camera, User, Mail, Phone, MapPin, Building, Briefcase, 
-  Calendar, Lock, Loader2, CheckCircle, AlertCircle, ShieldAlert
+  Calendar, Lock, Loader2, CheckCircle, AlertCircle, Eye, EyeOff, Star, Award
 } from "lucide-react";
 import { updateProfile } from "./actions";
 import { useRouter } from "next/navigation";
@@ -24,6 +24,8 @@ export default function ProfileClient({ user }: { user: any }) {
   const [imagePreview, setImagePreview] = useState<string | null>(user.image || null);
   const [imageBlob, setImageBlob] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [showSalary, setShowSalary] = useState(false);
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
@@ -306,8 +308,87 @@ export default function ProfileClient({ user }: { user: any }) {
                   </div>
                 </div>
 
+                {/* Base Salary */}
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Annual Base Salary</label>
+                  <div className="flex items-center justify-between bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-slate-600 font-semibold select-none">
+                    <div className="flex items-center gap-2.5">
+                      <Lock className="w-4 h-4 text-slate-400" />
+                      <span className="font-mono">{showSalary ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(user.employeeProfile?.salary || 0) : "••••••••"}</span>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => setShowSalary(!showSalary)}
+                      className="text-slate-400 hover:text-indigo-600 transition-colors"
+                      title={showSalary ? "Hide Salary" : "Show Salary"}
+                    >
+                      {showSalary ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </div>
+
+            {/* Section: Recent Performance */}
+            {user.employeeProfile?.reviewsReceived && user.employeeProfile.reviewsReceived.length > 0 && (
+              <div className="bg-white p-6 md:p-8 border-t border-slate-200/60 space-y-6">
+                <div className="border-b border-slate-100 pb-4">
+                  <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <Award className="w-5 h-5 text-amber-500" />
+                    Recent Performance
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-1">Your latest performance evaluation from your manager.</p>
+                </div>
+                
+                <div className="bg-amber-50/50 border border-amber-100 rounded-xl p-5">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-sm font-bold text-amber-900">Overall Rating</span>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <Star key={star} className={`w-5 h-5 ${star <= (user.employeeProfile.reviewsReceived[0].rating || 0) ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {user.employeeProfile.reviewsReceived[0].metrics && (
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-slate-600 font-medium">Work Quality</span>
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <Star key={`wq-${star}`} className={`w-3 h-3 ${star <= user.employeeProfile.reviewsReceived[0].metrics.workQuality ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-slate-600 font-medium">Communication</span>
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <Star key={`cm-${star}`} className={`w-3 h-3 ${star <= user.employeeProfile.reviewsReceived[0].metrics.communication ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-slate-600 font-medium">Punctuality</span>
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <Star key={`pt-${star}`} className={`w-3 h-3 ${star <= user.employeeProfile.reviewsReceived[0].metrics.punctuality ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {user.employeeProfile.reviewsReceived[0].managerComments && (
+                    <div className="mt-4 pt-4 border-t border-amber-200/50">
+                      <p className="text-xs font-semibold text-amber-800 uppercase tracking-wider mb-1">Manager Feedback</p>
+                      <p className="text-sm text-slate-700 italic">"{user.employeeProfile.reviewsReceived[0].managerComments}"</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Save Buttons */}
             <div className="p-6 border-t border-slate-100 flex justify-end gap-3 bg-white">

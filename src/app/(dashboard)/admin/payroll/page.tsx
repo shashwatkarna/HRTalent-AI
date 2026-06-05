@@ -2,6 +2,8 @@ import { db } from "@/lib/prisma";
 import { Wallet, TrendingUp, DollarSign, Download, Users } from "lucide-react";
 import RunPayrollClient from "./RunPayrollClient";
 import { format } from "date-fns";
+import PayrollExportButton from "@/components/admin/PayrollExportButton";
+import EditSalaryModal from "@/components/admin/EditSalaryModal";
 
 export default async function AdminPayrollPage() {
   // Fetch all active employees
@@ -95,9 +97,7 @@ export default async function AdminPayrollPage() {
             <Users className="w-5 h-5 text-slate-400" />
             <h2 className="text-lg font-bold text-slate-900">Employee Breakdown</h2>
           </div>
-          <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1 bg-indigo-50 px-3 py-1.5 rounded-lg">
-            <Download className="w-4 h-4" /> Export CSV
-          </button>
+          <PayrollExportButton employees={activeEmployees} />
         </div>
         
         <div className="overflow-x-auto">
@@ -140,7 +140,7 @@ export default async function AdminPayrollPage() {
                     <td className="p-4 font-medium text-slate-700 text-sm">{formatCurrency(monthly)}</td>
                     <td className="p-4 font-bold text-emerald-600 text-sm">{formatCurrency(net)}</td>
                     <td className="p-4 text-right pr-6">
-                      <button className="text-sm font-medium text-indigo-600 hover:text-indigo-800">Edit</button>
+                      <EditSalaryModal employeeId={emp.id} currentSalary={base} />
                     </td>
                   </tr>
                 );

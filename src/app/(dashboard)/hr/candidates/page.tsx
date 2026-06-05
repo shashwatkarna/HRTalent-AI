@@ -31,7 +31,7 @@ export default async function CandidatesPipelinePage({ searchParams }: { searchP
     <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Candidate Pipeline</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Talent Acquisition</h1>
           <p className="text-slate-500 mt-1">Manage applicants, schedule AI interviews, and review results.</p>
         </div>
         {/* We extract the form to a Client Component for interactivity */}

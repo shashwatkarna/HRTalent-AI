@@ -166,7 +166,7 @@ export default async function AdminAnalyticsPage() {
           <div className="flex justify-between items-center mb-8 relative z-10">
             <div>
               <h3 className="font-bold text-white text-lg flex items-center gap-2">
-                <Activity className="w-5 h-5 text-indigo-400" />
+                <BarChart3 className="w-5 h-5 text-indigo-400" />
                 Headcount Growth (Trailing 6 Months)
               </h3>
               <p className="text-slate-400 text-sm mt-1">Based on actual employee joining dates.</p>
@@ -177,17 +177,19 @@ export default async function AdminAnalyticsPage() {
             </div>
           </div>
 
-          <div className="h-48 flex items-end gap-2 relative z-10">
+          <div className="h-48 flex gap-2 relative z-10 pt-8">
             {growthData.map((count, i) => {
               const heightPercent = maxGrowth > 0 ? Math.round((count / maxGrowth) * 100) : 0;
               return (
-                <div key={i} className="flex-1 flex flex-col justify-end group">
-                  <div className="w-full bg-indigo-500/30 group-hover:bg-indigo-400/50 rounded-t-lg transition-all duration-300 relative" style={{ height: `${heightPercent}%` }}>
-                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-slate-900 text-xs font-bold px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                      {count} Employees
+                <div key={i} className="flex-1 flex flex-col h-full">
+                  <div className="flex-1 w-full flex items-end group">
+                    <div className="w-full bg-indigo-500/30 group-hover:bg-indigo-400/50 rounded-t-lg transition-all duration-300 relative" style={{ height: `${heightPercent}%` }}>
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-slate-900 text-xs font-bold px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        {count} Employees
+                      </div>
                     </div>
                   </div>
-                  <div className="text-center text-xs text-slate-400 mt-3 font-medium">
+                  <div className="text-center text-xs text-slate-400 mt-2 font-medium">
                     {months[i]}
                   </div>
                 </div>
