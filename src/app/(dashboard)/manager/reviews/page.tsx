@@ -61,7 +61,7 @@ export default async function ManagerReviewsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {managerProfile.directReports.map((emp) => {
-          const existingReview = submittedReviews.find((r: any) => r.employeeProfileId === emp.id);
+          const existingReview: any = submittedReviews.find((r: any) => r.employeeProfileId === emp.id);
 
           return (
             <div key={emp.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
@@ -97,7 +97,7 @@ export default async function ManagerReviewsPage() {
                             <span className="text-slate-600 font-medium">Work Quality</span>
                             <div className="flex items-center">
                               {[1, 2, 3, 4, 5].map(star => (
-                                <Star key={`wq-${star}`} className={`w-3 h-3 ${star <= existingReview.metrics.workQuality ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                                <Star key={`wq-${star}`} className={`w-3 h-3 ${star <= (existingReview.metrics as any).workQuality ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
                               ))}
                             </div>
                           </div>
@@ -105,7 +105,7 @@ export default async function ManagerReviewsPage() {
                             <span className="text-slate-600 font-medium">Communication</span>
                             <div className="flex items-center">
                               {[1, 2, 3, 4, 5].map(star => (
-                                <Star key={`cm-${star}`} className={`w-3 h-3 ${star <= existingReview.metrics.communication ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                                <Star key={`cm-${star}`} className={`w-3 h-3 ${star <= (existingReview.metrics as any).communication ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
                               ))}
                             </div>
                           </div>
@@ -113,7 +113,7 @@ export default async function ManagerReviewsPage() {
                             <span className="text-slate-600 font-medium">Punctuality</span>
                             <div className="flex items-center">
                               {[1, 2, 3, 4, 5].map(star => (
-                                <Star key={`pt-${star}`} className={`w-3 h-3 ${star <= existingReview.metrics.punctuality ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                                <Star key={`pt-${star}`} className={`w-3 h-3 ${star <= (existingReview.metrics as any).punctuality ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
                               ))}
                             </div>
                           </div>
