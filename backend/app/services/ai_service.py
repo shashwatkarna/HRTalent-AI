@@ -62,8 +62,8 @@ async def generate_greeting(candidate_data: dict):
     
     Their resume has been parsed and they have the following top skills: {skills_str}.
     
-    Start the interview by introducing yourself briefly, welcoming them by name, and asking a specific question about one of their skills.
-    Keep it conversational, professional, and under 3 sentences so it sounds natural when spoken by TTS.
+    Start the interview by softly introducing yourself, welcoming them, and asking them to confirm their full name to begin identity verification.
+    Do NOT ask any technical questions yet. Keep it conversational, professional, and under 2 sentences so it sounds natural when spoken by TTS.
     """
 
     response = model.generate_content(prompt)
