@@ -4,6 +4,7 @@ import { ArrowLeft, User, Mail, BrainCircuit, Activity, BarChart3, MessageSquare
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import SendInviteButton from "./SendInviteButton";
+import ShortlistButton from "./ShortlistButton";
 
 export default async function CandidateDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   // Fix Next.js 15+ promise unwrapping for params in server components
@@ -58,6 +59,9 @@ export default async function CandidateDetailsPage({ params }: { params: Promise
                 {candidate.status.replace("_", " ")}
               </span>
             </div>
+            {candidate.status === "INTERVIEWED" && (
+              <ShortlistButton candidateId={candidate.id} />
+            )}
           </div>
         </div>
 

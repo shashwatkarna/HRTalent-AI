@@ -13,7 +13,7 @@ export async function generateOffer(formData: FormData, candidateId: string) {
   }
 
   // Create the offer in the database
-  await db.offer.create({
+  const offer = await db.offer.create({
     data: {
       candidateId,
       designation,
@@ -22,6 +22,16 @@ export async function generateOffer(formData: FormData, candidateId: string) {
       status: "PENDING"
     }
   });
+
+  // Fetch candidate to get email and name for the offer email
+  const candidate = await db.candidate.findUnique({
+    where: { id: candidateId }
+  });
+
+  if (candidate && candidate.email) {
+    const { sendOfferEmail } = await import("@/app/actions/email");
+    await sendOfferEmail(candidate.email, candidate.name, designation, salary, offer.id);
+  }
 
   // Revalidate the offers dashboard
   revalidatePath("/hr/offers");

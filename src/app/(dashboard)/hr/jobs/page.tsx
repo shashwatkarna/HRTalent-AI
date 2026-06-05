@@ -4,6 +4,7 @@ import { Plus, Briefcase, Users, FileText, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { ToggleJobButton } from "./ToggleJobButton";
 
 export default async function HRJobsPage() {
   const jobs = await db.jobPosting.findMany({
@@ -73,7 +74,8 @@ export default async function HRJobsPage() {
                   <td className="p-4 align-top text-sm text-slate-600">
                     {format(new Date(job.createdAt), "MMM d, yyyy")}
                   </td>
-                  <td className="p-4 align-top text-right">
+                  <td className="p-4 align-top text-right flex justify-end gap-2">
+                    <ToggleJobButton jobId={job.id} isActive={job.isActive} />
                     <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50">
                       Edit
                     </Button>

@@ -141,3 +141,43 @@ export async function sendTerminationRejectionEmail(email: string, targetName: s
     return { success: false, error: err.message };
   }
 }
+
+export async function sendOfferEmail(email: string, name: string, designation: string, salary: number, offerId: string) {
+  try {
+    const offerLink = process.env.NODE_ENV === "production" 
+      ? `https://yourdomain.com/offer/${offerId}`
+      : `http://localhost:3000/offer/${offerId}`;
+      
+    const { data, error } = await resend.emails.send({
+      from: 'AITalent-HR <onboarding@resend.dev>',
+      to: email,
+      subject: 'Job Offer from AITalent-HR - Action Required',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+          <h2 style="color: #4f46e5;">Congratulations ${name}! 🎉</h2>
+          <p>We are extremely excited to extend an offer for you to join our team as a <strong>${designation}</strong>.</p>
+          <p>Based on your excellent performance in the AI Interview, we are offering an annual salary of <strong>₹${salary.toLocaleString()}</strong>.</p>
+          
+          <div style="margin: 30px 0; text-align: center;">
+            <a href="${offerLink}" style="background-color: #4f46e5; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block;">
+              View & Accept Offer
+            </a>
+          </div>
+          
+          <p>Please review the official offer letter at the link above. We hope you accept and look forward to welcoming you aboard!</p>
+          <br>
+          <p>Warm Regards,<br>The HR Team</p>
+        </div>
+      `
+    });
+
+    if (error) {
+      console.error("Resend Error:", error);
+      return { success: false, error: error.message };
+    }
+    return { success: true, data };
+  } catch (err: any) {
+    console.error("Failed to send offer email:", err);
+    return { success: false, error: err.message };
+  }
+}

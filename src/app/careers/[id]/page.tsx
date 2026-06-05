@@ -61,10 +61,21 @@ export default async function JobDetailsPage({ params }: { params: Promise<{ id:
         {/* Apply Column */}
         <div className="md:col-span-1">
           <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm sticky top-10">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Apply for this position</h3>
-            <p className="text-sm text-slate-500 mb-6">Our AI will review your resume and invite you to an interview if there is a match.</p>
-            
-            <ApplyForm jobId={job.id} />
+            {job.isActive ? (
+              <>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Apply for this position</h3>
+                <p className="text-sm text-slate-500 mb-6">Our AI will review your resume and invite you to an interview if there is a match.</p>
+                <ApplyForm jobId={job.id} />
+              </>
+            ) : (
+              <div className="text-center py-6">
+                <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle2 className="w-6 h-6 text-slate-400" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Position Filled</h3>
+                <p className="text-sm text-slate-500">We are no longer accepting applications for this role. Please check back later for similar opportunities.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

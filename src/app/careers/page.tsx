@@ -4,8 +4,10 @@ import { Briefcase, MapPin, Clock, ArrowRight } from "lucide-react";
 
 export default async function CareersPage() {
   const jobs = await db.jobPosting.findMany({
-    where: { isActive: true },
-    orderBy: { createdAt: 'desc' }
+    orderBy: [
+      { isActive: 'desc' },
+      { createdAt: 'desc' }
+    ]
   });
 
   return (
@@ -39,11 +41,24 @@ export default async function CareersPage() {
               <Link 
                 key={job.id} 
                 href={`/careers/${job.id}`}
-                className="block bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all group"
+                className={`block bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition-all group ${
+                  job.isActive ? "hover:shadow-md hover:border-indigo-300" : "opacity-60 bg-slate-50/50 grayscale-[0.5]"
+                }`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{job.title}</h3>
+                    <div className="flex items-center gap-3">
+                      <h3 className={`text-xl font-bold transition-colors ${
+                        job.isActive ? "text-slate-900 group-hover:text-indigo-600" : "text-slate-500"
+                      }`}>
+                        {job.title}
+                      </h3>
+                      {!job.isActive && (
+                        <span className="px-2 py-0.5 rounded text-xs font-semibold bg-slate-200 text-slate-600 border border-slate-300">
+                          Position Filled
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-4 mt-3 text-sm text-slate-500">
                       <div className="flex items-center gap-1">
                         <MapPin className="w-4 h-4" /> Remote / Global
@@ -54,7 +69,9 @@ export default async function CareersPage() {
                     </div>
                   </div>
                   
-                  <div className="flex items-center text-indigo-600 font-semibold group-hover:translate-x-1 transition-transform">
+                  <div className={`flex items-center font-semibold transition-transform ${
+                    job.isActive ? "text-indigo-600 group-hover:translate-x-1" : "text-slate-500"
+                  }`}>
                     View Details <ArrowRight className="w-4 h-4 ml-1" />
                   </div>
                 </div>

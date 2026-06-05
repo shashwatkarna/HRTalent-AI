@@ -29,3 +29,21 @@ export async function createJobPosting(formData: FormData) {
   revalidatePath("/hr/jobs");
   redirect("/hr/jobs");
 }
+
+export async function toggleJobStatus(jobId: string, currentStatus: boolean) {
+  try {
+    await db.jobPosting.update({
+      where: { id: jobId },
+      data: { isActive: !currentStatus }
+    });
+
+    revalidatePath("/hr/jobs");
+    revalidatePath("/careers");
+    revalidatePath(`/careers/${jobId}`);
+    
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to toggle job status:", error);
+    return { error: "Failed to toggle job status" };
+  }
+}
