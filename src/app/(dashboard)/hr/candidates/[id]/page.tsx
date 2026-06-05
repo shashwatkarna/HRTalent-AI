@@ -1,6 +1,6 @@
 import { db } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { ArrowLeft, User, Mail, BrainCircuit, Activity, BarChart3, MessageSquareText, ShieldAlert } from "lucide-react";
+import { ArrowLeft, User, Mail, BrainCircuit, Activity, BarChart3, MessageSquareText, ShieldAlert, FileText } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import SendInviteButton from "./SendInviteButton";
@@ -59,6 +59,16 @@ export default async function CandidateDetailsPage({ params }: { params: Promise
                 {candidate.status.replace("_", " ")}
               </span>
             </div>
+            {candidate.resumeUrl && (
+              <div>
+                <a href={candidate.resumeUrl} target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" className="w-full text-slate-700 border-slate-300">
+                    <FileText className="w-4 h-4 mr-2" />
+                    View Original Resume
+                  </Button>
+                </a>
+              </div>
+            )}
             {candidate.status === "INTERVIEWED" && (
               <ShortlistButton candidateId={candidate.id} />
             )}

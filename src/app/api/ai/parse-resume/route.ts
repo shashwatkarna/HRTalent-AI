@@ -59,12 +59,42 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Candidate with this email already exists." }, { status: 409 });
     }
 
+    // 2.5 Upload to Supabase Storage
+    let resumeUrl = null;
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('resumes')
+        .upload(fileName, file, {
+          contentType: file.type,
+          upsert: false
+        });
+        
+      if (!uploadError && uploadData) {
+        const { data: publicUrlData } = supabase.storage.from('resumes').getPublicUrl(fileName);
+        resumeUrl = publicUrlData.publicUrl;
+      } else {
+        console.error("Supabase Upload Error:", uploadError);
+      }
+    } catch (storageErr) {
+      console.error("Failed to upload to Supabase:", storageErr);
+    }
+
     // 3. Save Candidate and initialize AIEvaluation
     const candidate = await db.candidate.create({
       data: {
         name: extractedData.name,
         email: uniqueEmail,
         jobPostingId: jobId,
+        resumeUrl: resumeUrl,
         status: "SCREENED", // Changed state to SCREENED post-parsing
         aiEvaluation: {
           create: {

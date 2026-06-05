@@ -147,6 +147,7 @@ model PerformanceReview {
   rating            Int?      // 1 to 5 scale
   managerComments   String?   @db.Text
   aiSummary         String?   @db.Text
+  metrics           Json?     // Detailed breakdown {workQuality, communication, punctuality}
   
   status            String    @default("DRAFT") // DRAFT, SUBMITTED
   

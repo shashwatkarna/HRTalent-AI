@@ -8,7 +8,8 @@ export async function submitReview(
   managerId: string,
   reviewCycleId: string, 
   rating: number, 
-  managerComments: string
+  managerComments: string,
+  metrics: any
 ) {
   try {
     // Upsert the review in case they are editing a draft, though for this hackathon we just create/submit
@@ -22,6 +23,7 @@ export async function submitReview(
       update: {
         rating,
         managerComments,
+        metrics,
         status: "SUBMITTED"
       },
       create: {
@@ -30,6 +32,7 @@ export async function submitReview(
         reviewCycleId,
         rating,
         managerComments,
+        metrics,
         status: "SUBMITTED"
       }
     });
