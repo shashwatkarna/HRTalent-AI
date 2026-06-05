@@ -1,4 +1,4 @@
-<!-- # AITalent-HR: Next-Gen Enterprise HRMS
+# AITalent-HR: Next-Gen Enterprise HRMS
 
 **AITalent-HR** is an AI-powered Human Resources Management System designed to automate tedious HR tasks and remove human bias from recruiting. It is built using Next.js, Prisma, Supabase, and Gemini AI.
 
@@ -43,4 +43,4 @@ The platform has different "views" depending on who logs in:
 - **Frontend:** Next.js (App Router), TailwindCSS, Lucide Icons.
 - **Database:** PostgreSQL (hosted on Supabase), managed via Prisma ORM.
 - **Authentication:** Supabase Auth (Strict Role-Based Access Control).
-- **Real-Time AI Backend:** A dedicated Node.js + Express + Socket.io server running on Port 3001 to handle real-time voice streaming with Gemini 2.5 Flash. -->
+- **Real-Time AI Backend:** A dedicated Node.js + Express + Socket.io server running on Port 3001 to handle real-time voice streaming with Gemini 2.5 Flash.
