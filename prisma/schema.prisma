@@ -33,6 +33,9 @@ model User {
   // Link to Employee Data
   employeeProfile EmployeeProfile?
   
+  // HR Action Requests
+  requestsMade      HRActionRequest[] @relation("RequestsMade")
+  requestsTargeted  HRActionRequest[] @relation("RequestsTargeted")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -283,4 +286,20 @@ model AIEvaluation {
   
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
+}
+
+model HRActionRequest {
+  id               String   @id @default(cuid())
+  requesterId      String
+  requester        User     @relation("RequestsMade", fields: [requesterId], references: [id])
+  
+  targetEmployeeId String
+  targetEmployee   User     @relation("RequestsTargeted", fields: [targetEmployeeId], references: [id])
+  
+  actionType       String   // e.g., "TERMINATION"
+  reason           String   @db.Text
+  status           String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

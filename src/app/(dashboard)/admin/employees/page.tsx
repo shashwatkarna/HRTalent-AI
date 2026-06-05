@@ -2,6 +2,7 @@ import { db } from "@/lib/prisma";
 import { Plus, Search, MoreVertical, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import EmployeeRowActions from "./EmployeeRowActions";
 
 export default async function EmployeeManagementPage() {
   const users = await db.user.findMany({
@@ -95,10 +96,8 @@ export default async function EmployeeManagementPage() {
                   <td className="px-6 py-4 text-slate-500">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="text-slate-400 hover:text-slate-600 transition-colors">
-                      <MoreVertical className="w-5 h-5" />
-                    </button>
+                  <td className="px-6 py-4 text-right overflow-visible">
+                    <EmployeeRowActions user={{ id: user.id, name: user.name, email: user.email, role: user.role }} />
                   </td>
                 </tr>
               ))}

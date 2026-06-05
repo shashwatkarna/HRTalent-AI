@@ -1,7 +1,7 @@
 import { db } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { CalendarDays, Wallet, UserCircle, Briefcase, FileText, Clock } from "lucide-react";
+import { CalendarDays, Wallet, UserCircle, Briefcase, FileText, Clock, Users, Star, Award } from "lucide-react";
 import Link from "next/link";
 import { endOfMonth, format, differenceInDays } from "date-fns";
 import ClockInClient from "./attendance/ClockInClient";
@@ -78,15 +78,20 @@ export default async function EmployeeDashboardPage() {
   // 2. Next Pay Date (Last day of current month)
   const nextPayDate = format(endOfMonth(new Date()), "MMM dd");
 
-  // 3. Calculate Profile Completion
-  let completedFields = 0;
-  const totalFields = 5;
-  if (user!.name) completedFields++;
-  if (profile.contactNumber) completedFields++;
-  if (profile.address) completedFields++;
-  if (profile.departmentId) completedFields++;
-  if (profile.joiningDate) completedFields++;
-  const profileCompletion = Math.round((completedFields / totalFields) * 100);
+  // 3. Calculate Tenure (Length of Service)
+  let tenureString = "New Joiner";
+  if (profile.joiningDate) {
+    const days = differenceInDays(new Date(), new Date(profile.joiningDate));
+    if (days < 30) {
+      tenureString = `${Math.max(days, 0)} Days`;
+    } else if (days < 365) {
+      tenureString = `${Math.floor(days / 30)} Months`;
+    } else {
+      const years = Math.floor(days / 365);
+      const remainingMonths = Math.floor((days % 365) / 30);
+      tenureString = remainingMonths > 0 ? `${years}Y ${remainingMonths}M` : `${years} Years`;
+    }
+  }
 
   // 4. Recent documents (Payslips)
   const recentDocuments = profile.payslips.map((ps: any) => ({
@@ -114,6 +119,29 @@ export default async function EmployeeDashboardPage() {
   const recentLeaves = [...profile.leaveRequests]
     .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 3);
+
+  // 7. My Team & Manager
+  let manager = null;
+  let peers: any[] = [];
+  if (profile.managerId) {
+    manager = await db.employeeProfile.findUnique({
+      where: { id: profile.managerId },
+      include: { user: true }
+    });
+    peers = await db.employeeProfile.findMany({
+      where: { managerId: profile.managerId, id: { not: profile.id } },
+      include: { user: true },
+      take: 4
+    });
+  }
+
+  // 8. Performance Reviews
+  const performanceReviews = await db.performanceReview.findMany({
+    where: { employeeProfileId: profile.id },
+    include: { reviewCycle: true },
+    orderBy: { createdAt: "desc" },
+    take: 2
+  });
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -169,21 +197,16 @@ export default async function EmployeeDashboardPage() {
           </div>
         </Link>
 
-        {/* Profile Completion */}
-        <Link href="/profile" className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-5 hover:border-blue-300 transition-colors cursor-pointer group">
+        {/* Length of Service */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-5 hover:border-purple-300 transition-colors group">
           <div className="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
-            <UserCircle className="w-7 h-7" />
+            <Clock className="w-7 h-7" />
           </div>
-          <div className="w-full">
-            <div className="flex justify-between items-center mb-1.5">
-              <p className="text-sm font-medium text-slate-500">Profile</p>
-              <span className="text-xs font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">{profileCompletion}%</span>
-            </div>
-            <div className="w-full bg-slate-100 rounded-full h-2">
-              <div className="bg-purple-600 h-2 rounded-full transition-all duration-1000" style={{ width: `${profileCompletion}%` }}></div>
-            </div>
+          <div>
+            <p className="text-sm font-medium text-slate-500">Length of Service</p>
+            <h3 className="text-2xl font-bold text-slate-900">{tenureString}</h3>
           </div>
-        </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -290,6 +313,106 @@ export default async function EmployeeDashboardPage() {
               clockInTime={todaysAttendance?.clockIn ? format(new Date(todaysAttendance.clockIn), "h:mm a") : null}
               clockOutTime={todaysAttendance?.clockOut ? format(new Date(todaysAttendance.clockOut), "h:mm a") : null}
             />
+          </div>
+        </div>
+
+      </div>
+
+      {/* New Row: My Team & Performance Reviews */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* My Team */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <h2 className="font-bold text-slate-900 text-lg flex items-center gap-2">
+              <Users className="w-5 h-5 text-indigo-600" />
+              My Team
+            </h2>
+            <Link href="/directory" className="text-sm text-blue-600 font-semibold hover:text-blue-700">View Org Chart</Link>
+          </div>
+          <div className="p-6">
+            {!manager ? (
+              <div className="text-sm text-slate-500 text-center py-4">No team data available.</div>
+            ) : (
+              <div className="space-y-6">
+                {/* Manager */}
+                <div>
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Direct Manager</h3>
+                  <div className="flex items-center gap-3 bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
+                    <div className="w-10 h-10 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center font-bold">
+                      {manager.user.name ? manager.user.name.substring(0, 2).toUpperCase() : "M"}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-slate-900 text-sm">{manager.user.name}</h4>
+                      <p className="text-xs text-slate-500">{manager.designation}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Peers */}
+                {peers.length > 0 && (
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Peers</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {peers.map(peer => (
+                        <div key={peer.id} className="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                          <div className="w-8 h-8 bg-slate-200 text-slate-600 rounded-full flex items-center justify-center font-bold text-xs">
+                            {peer.user.name ? peer.user.name.substring(0, 2).toUpperCase() : "P"}
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-slate-800 text-xs truncate max-w-[100px]">{peer.user.name}</h4>
+                            <p className="text-[10px] text-slate-500 truncate max-w-[100px]">{peer.designation}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Performance Reviews */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <h2 className="font-bold text-slate-900 text-lg flex items-center gap-2">
+              <Star className="w-5 h-5 text-amber-500" />
+              Performance Reviews
+            </h2>
+            <button className="text-sm text-blue-600 font-semibold hover:text-blue-700">All Reviews</button>
+          </div>
+          <div className="p-6">
+            {performanceReviews.length === 0 ? (
+              <div className="text-sm text-slate-500 text-center py-8">
+                <Award className="w-10 h-10 mx-auto text-slate-200 mb-2" />
+                No performance reviews found.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {performanceReviews.map(review => (
+                  <div key={review.id} className="border border-slate-100 rounded-xl p-4 hover:border-blue-100 transition-colors">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className="font-bold text-slate-900 text-sm">{review.reviewCycle.name}</h4>
+                        <p className="text-xs text-slate-500">Status: <span className="font-semibold capitalize text-amber-600">{review.reviewCycle.status.toLowerCase()}</span></p>
+                      </div>
+                      <div className="bg-slate-50 border border-slate-200 px-2 py-1 rounded text-xs font-bold text-slate-700 flex items-center gap-1">
+                        <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                        {review.rating ? `${review.rating}/5` : "Pending"}
+                      </div>
+                    </div>
+                    {review.managerComments ? (
+                      <p className="text-xs text-slate-600 mt-3 line-clamp-2 italic border-l-2 border-slate-200 pl-2">
+                        "{review.managerComments}"
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-slate-400 mt-2">Waiting for manager feedback.</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

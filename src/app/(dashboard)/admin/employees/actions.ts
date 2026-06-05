@@ -87,3 +87,119 @@ export async function updateLeaveStatus(leaveRequestId: string, newStatus: "APPR
     return { error: "Failed to update leave request status: " + error.message };
   }
 }
+
+export async function updateEmployee(userId: string, data: { name: string, role: string }) {
+  try {
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+
+    if (!authUser || !authUser.email) return { error: "Unauthorized access" };
+    const currentUser = await db.user.findUnique({ where: { email: authUser.email } });
+    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "MANAGEMENT")) {
+      return { error: "Unauthorized access" };
+    }
+
+    const updatedUser = await db.user.update({
+      where: { id: userId },
+      data: {
+        name: data.name,
+        role: data.role as Role,
+      },
+    });
+
+    // Also try updating EmployeeProfile designation
+    try {
+      await db.employeeProfile.update({
+        where: { userId: userId },
+        data: { designation: data.role.replace("_", " ") },
+      });
+    } catch(e) {
+      // It might not exist, ignore
+    }
+
+    // Try to update Supabase metadata (optional, best effort)
+    try {
+      const supabaseAdmin = createAdminClient();
+      const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
+      const sUser = users.find(u => u.email === updatedUser.email);
+      if (sUser) {
+        await supabaseAdmin.auth.admin.updateUserById(sUser.id, { user_metadata: { name: data.name } });
+      }
+    } catch(e) {
+      console.error(e);
+    }
+
+    revalidatePath("/admin/employees");
+    return { success: true };
+  } catch (error: any) {
+    return { error: "Failed to update employee: " + error.message };
+  }
+}
+
+export async function deleteEmployee(userId: string) {
+  try {
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+
+    if (!authUser || !authUser.email) return { error: "Unauthorized access" };
+    const currentUser = await db.user.findUnique({ where: { email: authUser.email } });
+    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "MANAGEMENT")) {
+      return { error: "Unauthorized access" };
+    }
+
+    const targetUser = await db.user.findUnique({ where: { id: userId } });
+    if (!targetUser) return { error: "User not found" };
+
+    // 1. Delete from DB
+    await db.user.delete({ where: { id: userId } });
+
+    // 2. Delete from Supabase Auth
+    try {
+      const supabaseAdmin = createAdminClient();
+      const { data: { users } } = await supabaseAdmin.auth.admin.listUsers();
+      const sUser = users.find(u => u.email === targetUser.email);
+      if (sUser) {
+        await supabaseAdmin.auth.admin.deleteUser(sUser.id);
+      }
+    } catch (e) {
+      console.error("Failed to delete from Supabase", e);
+    }
+
+    revalidatePath("/admin/employees");
+    return { success: true };
+  } catch (error: any) {
+    return { error: "Failed to delete employee: " + error.message };
+  }
+}
+
+export async function requestTermination(targetUserId: string, reason: string) {
+  try {
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+
+    if (!authUser || !authUser.email) return { error: "Unauthorized access" };
+    const currentUser = await db.user.findUnique({ where: { email: authUser.email } });
+    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "MANAGEMENT" && currentUser.role !== "SENIOR_MANAGER")) {
+      return { error: "Unauthorized access" };
+    }
+
+    const targetUser = await db.user.findUnique({ where: { id: targetUserId } });
+    if (!targetUser) return { error: "User not found" };
+
+    // Create the HRActionRequest
+    await db.hRActionRequest.create({
+      data: {
+        requesterId: currentUser.id,
+        targetEmployeeId: targetUserId,
+        actionType: "TERMINATION",
+        reason: reason,
+        status: "PENDING"
+      }
+    });
+
+    revalidatePath("/admin/employees");
+    return { success: true };
+  } catch (error: any) {
+    return { error: "Failed to submit termination request: " + error.message };
+  }
+}

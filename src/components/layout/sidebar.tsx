@@ -45,6 +45,7 @@ export default function Sidebar({ role }: { role: string }) {
       { name: 'Company Directory', href: '/directory', icon: Users },
       { name: 'Voice Interviews', href: '/hr/interviews', icon: Mic },
       { name: 'Offers & Approvals', href: '/hr/offers', icon: FileText },
+      { name: 'Action Requests', href: '/hr/requests', icon: Settings },
       { name: 'AI Screening', href: '/hr/upload', icon: BrainCircuit },
     ];
   } else if (role === 'SENIOR_MANAGER') {

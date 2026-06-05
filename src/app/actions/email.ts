@@ -85,3 +85,59 @@ export async function sendOnboardingCredentials(email: string, tempPassword: str
     return { success: false, error: err.message };
   }
 }
+
+export async function sendTerminationEmail(email: string, name: string) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'AITalent-HR <onboarding@resend.dev>',
+      to: email,
+      subject: 'Important Notification Regarding Your Employment',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+          <h2 style="color: #ef4444;">Hello ${name},</h2>
+          <p>We are writing to officially notify you that your employment with the company has been terminated.</p>
+          <p>Your access to the company dashboard and internal systems has been revoked.</p>
+          <p>If you have any questions regarding your final payroll or offboarding procedures, please contact the HR department.</p>
+          <br>
+          <p>Regards,<br>HR Management Team</p>
+        </div>
+      `
+    });
+
+    if (error) {
+      console.error("Resend Error:", error);
+      return { success: false, error: error.message };
+    }
+    return { success: true, data };
+  } catch (err: any) {
+    console.error("Failed to send termination email:", err);
+    return { success: false, error: err.message };
+  }
+}
+
+export async function sendTerminationRejectionEmail(email: string, targetName: string) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'AITalent-HR <onboarding@resend.dev>',
+      to: email,
+      subject: 'Update on Termination Request',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+          <h2 style="color: #f59e0b;">Termination Request Rejected</h2>
+          <p>This is to inform you that your request to terminate <strong>${targetName}</strong> has been reviewed and <strong>rejected</strong> by the HR department.</p>
+          <p>No action has been taken on the employee's account.</p>
+          <p>Please reach out to HR if you need further clarification.</p>
+        </div>
+      `
+    });
+
+    if (error) {
+      console.error("Resend Error:", error);
+      return { success: false, error: error.message };
+    }
+    return { success: true, data };
+  } catch (err: any) {
+    console.error("Failed to send termination rejection email:", err);
+    return { success: false, error: err.message };
+  }
+}
