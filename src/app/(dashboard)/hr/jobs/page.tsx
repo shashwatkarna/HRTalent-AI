@@ -76,9 +76,11 @@ export default async function HRJobsPage() {
                   </td>
                   <td className="p-4 align-top text-right flex justify-end gap-2">
                     <ToggleJobButton jobId={job.id} isActive={job.isActive} />
-                    <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50">
-                      Edit
-                    </Button>
+                    <Link href={`/hr/jobs/${job.id}/edit`}>
+                      <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50">
+                        Edit
+                      </Button>
+                    </Link>
                   </td>
                 </tr>
               ))}

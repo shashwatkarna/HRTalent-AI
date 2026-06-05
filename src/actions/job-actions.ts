@@ -47,3 +47,29 @@ export async function toggleJobStatus(jobId: string, currentStatus: boolean) {
     return { error: "Failed to toggle job status" };
   }
 }
+
+export async function updateJobPosting(jobId: string, formData: FormData) {
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const skillsString = formData.get("skills") as string;
+
+  if (!title || !description || !skillsString) {
+    throw new Error("Missing required fields");
+  }
+
+  const requiredSkills = skillsString.split(",").map(s => s.trim()).filter(Boolean);
+
+  await db.jobPosting.update({
+    where: { id: jobId },
+    data: {
+      title,
+      description,
+      requiredSkills,
+    }
+  });
+
+  revalidatePath("/hr/jobs");
+  revalidatePath("/careers");
+  revalidatePath(`/careers/${jobId}`);
+  redirect("/hr/jobs");
+}
