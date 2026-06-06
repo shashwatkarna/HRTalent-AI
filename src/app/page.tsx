@@ -4,10 +4,38 @@ import { useState } from "react";
 import { 
   ArrowUpRight, BarChart3, BrainCircuit, CalendarCheck, FileBadge, 
   LayoutDashboard, Mic, ShieldCheck, Users, Wallet, Menu, X, 
-  ChevronRight, CheckCircle2, UserCheck, RefreshCw
+  ChevronRight, CheckCircle2, UserCheck, RefreshCw, ArrowRight
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import MermaidDiagram from "@/components/MermaidDiagram";
+
+const ARCHITECTURE_CHART = `
+graph TD
+    %% Core Architecture
+    User([User / Candidate]) -->|HTTPS| Vercel[Next.js Frontend]
+    User -->|WSS| Railway[Python FastAPI Backend]
+    
+    subgraph "Vercel (Next.js App Router)"
+        UI[UI Components] -->|Prisma ORM| SupabaseDB[(Supabase PostgreSQL)]
+        UI -->|Auth API| SupabaseAuth[Supabase Auth]
+    end
+    
+    subgraph "RBAC (Role-Based Access Control)"
+        SupabaseAuth -->|Role: ADMIN| Admin[Governance & Payroll]
+        SupabaseAuth -->|Role: MANAGER| Manager[Reviews & Jobs]
+        SupabaseAuth -->|Role: HR| HRRole[Recruitment & Interviews]
+        SupabaseAuth -->|Role: EMPLOYEE| Employee[Profile & HR Chatbot]
+    end
+    
+    subgraph "Railway (Python AI Backend)"
+        VoiceService[Socket.io Streaming] -->|Faster-Whisper| Transcribe[Audio -> Text]
+        Transcribe -->|API Calls| Gemini[Google Gemini 2.5 Flash]
+        Gemini -->|Text -> Audio| VoiceService
+    end
+    
+    Vercel -.->|Fetches AI JD| Gemini
+`;
 
 export default function WelcomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -189,110 +217,12 @@ export default function WelcomePage() {
               <p className="text-slate-400 max-w-2xl mx-auto">A sub-500ms latency pipeline powered by WebSockets, capturing audio, analyzing sentiment, and evaluating technical skills in real-time.</p>
             </div>
             
-            {/* Animations */}
-            <style dangerouslySetInnerHTML={{__html: `
-              @keyframes dataFlow {
-                0% { left: 0%; opacity: 0; transform: scale(0.5); }
-                5% { opacity: 1; transform: scale(1); }
-                95% { opacity: 1; transform: scale(1); }
-                100% { left: 100%; opacity: 0; transform: scale(0.5); }
-              }
-              .animate-data-flow {
-                animation: dataFlow 3s infinite linear;
-              }
-              .animate-data-flow-delayed {
-                animation: dataFlow 3s infinite linear 1.5s;
-              }
-              @keyframes pulseRing {
-                0% { transform: scale(0.8); opacity: 0.5; }
-                100% { transform: scale(1.6); opacity: 0; }
-              }
-              .animate-pulse-ring {
-                animation: pulseRing 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-              }
-            `}} />
-
-            {/* Architecture Diagram */}
-            <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 md:gap-0 mt-8">
-              
-              {/* Connecting Lines (Desktop only) */}
-              <div className="hidden md:block absolute top-[40px] left-[5%] right-[5%] h-[2px] bg-slate-800 z-0" />
-              
-              {/* Animated Data Packets */}
-              <div className="hidden md:block absolute top-[40px] left-[5%] right-[5%] h-[2px] z-0">
-                 <div className="absolute w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_12px_#60a5fa] top-1/2 -translate-y-1/2 -mt-[1px] animate-data-flow" />
-                 <div className="absolute w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_12px_#c084fc] top-1/2 -translate-y-1/2 -mt-[1px] animate-data-flow-delayed" />
-              </div>
-
-              {/* Node 1: Candidate Client */}
-              <div className="relative z-10 flex flex-col items-center group w-32 md:w-40">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-blue-500 rounded-full animate-pulse-ring" />
-                  <div className="w-20 h-20 md:w-20 md:h-20 bg-slate-900 border-2 border-slate-700 rounded-full flex items-center justify-center relative z-10 group-hover:border-blue-500 transition-colors shadow-lg shadow-blue-900/20">
-                    <Mic className="w-8 h-8 text-blue-400" />
-                  </div>
-                </div>
-                <div className="mt-4 text-center">
-                  <div className="text-white font-bold mb-1 text-sm md:text-base">Candidate</div>
-                  <div className="text-[10px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded border border-slate-700">MediaRecorder</div>
-                </div>
-              </div>
-
-              {/* Node 2: WebSockets */}
-              <div className="relative z-10 flex flex-col items-center group w-32 md:w-40">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-900 border-2 border-slate-700 rounded-xl rotate-45 flex items-center justify-center relative z-10 group-hover:border-purple-500 transition-colors shadow-lg shadow-purple-900/20">
-                  <div className="-rotate-45">
-                    <RefreshCw className="w-8 h-8 text-purple-400" />
-                  </div>
-                </div>
-                <div className="mt-4 text-center">
-                  <div className="text-white font-bold mb-1 text-sm md:text-base">Socket.io</div>
-                  <div className="text-[10px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded border border-slate-700">WSS:// Stream</div>
-                  <div className="text-[9px] text-purple-400 mt-2 uppercase tracking-widest font-bold">Audio Blobs</div>
-                </div>
-              </div>
-
-              {/* Node 3: AI Core */}
-              <div className="relative z-10 flex flex-col items-center group w-40 md:w-48">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-emerald-500 rounded-2xl animate-pulse-ring" style={{ animationDelay: '0.5s' }} />
-                  <div className="w-24 h-24 md:w-24 md:h-24 bg-slate-900 border-2 border-emerald-500 rounded-2xl flex items-center justify-center relative z-10 shadow-lg shadow-emerald-900/40">
-                    <BrainCircuit className="w-10 h-10 text-emerald-400" />
-                  </div>
-                </div>
-                <div className="mt-5 text-center">
-                  <div className="text-white font-bold mb-2 text-sm md:text-base">AI NLP Engine</div>
-                  <div className="flex flex-col gap-1.5">
-                    <div className="text-[10px] text-slate-300 font-mono border border-slate-700 bg-slate-800/80 px-2 py-1 rounded">Deepgram STT</div>
-                    <div className="text-[10px] text-slate-300 font-mono border border-slate-700 bg-slate-800/80 px-2 py-1 rounded">OpenAI GPT-4o</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Node 4: Scoring & Sync */}
-              <div className="relative z-10 flex flex-col items-center group w-32 md:w-40">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-900 border-2 border-slate-700 rounded-xl flex items-center justify-center relative z-10 group-hover:border-amber-500 transition-colors shadow-lg shadow-amber-900/20">
-                  <BarChart3 className="w-8 h-8 text-amber-400" />
-                </div>
-                <div className="mt-4 text-center">
-                  <div className="text-white font-bold mb-1 text-sm md:text-base">Scoring Engine</div>
-                  <div className="text-[10px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded border border-slate-700">Sentiment & Logic</div>
-                  <div className="text-[9px] text-amber-400 mt-2 uppercase tracking-widest font-bold">JSON Payload</div>
-                </div>
-              </div>
-
-              {/* Node 5: Dashboard */}
-              <div className="relative z-10 flex flex-col items-center group w-32 md:w-40">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-slate-900 border-2 border-slate-700 rounded-full flex items-center justify-center relative z-10 group-hover:border-blue-500 transition-colors shadow-lg shadow-blue-900/20">
-                  <LayoutDashboard className="w-8 h-8 text-blue-400" />
-                </div>
-                <div className="mt-4 text-center">
-                  <div className="text-white font-bold mb-1 text-sm md:text-base">HR Dashboard</div>
-                  <div className="text-[10px] text-slate-400 font-mono bg-slate-800/80 px-2 py-1 rounded border border-slate-700">PostgreSQL DB</div>
-                </div>
-              </div>
-
+            {/* Architecture Diagram - Full Mermaid Version */}
+            <div className="relative z-10 w-full mt-12">
+              <MermaidDiagram chart={ARCHITECTURE_CHART} />
             </div>
+
+
           </div>
         </div>
       </section>
@@ -335,27 +265,27 @@ export default function WelcomePage() {
           <div>
             <h4 className="font-bold text-sm text-slate-900 mb-4">Product</h4>
             <ul className="space-y-3 text-sm text-slate-500">
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Features</li>
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Integrations</li>
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Security</li>
+              <li><Link href="#features" className="hover:text-blue-600 cursor-pointer transition-colors block">Features</Link></li>
+              <li><Link href="/hackathon" className="hover:text-blue-600 cursor-pointer transition-colors block">Integrations</Link></li>
+              <li><Link href="/hackathon" className="hover:text-blue-600 cursor-pointer transition-colors block">Security</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-sm text-slate-900 mb-4">Resources</h4>
             <ul className="space-y-3 text-sm text-slate-500">
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Documentation</li>
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Blog</li>
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Case Studies</li>
+              <li><Link href="/docs" className="hover:text-blue-600 cursor-pointer transition-colors block">Documentation</Link></li>
+              <li><Link href="/hackathon" className="hover:text-blue-600 cursor-pointer transition-colors block">Blog</Link></li>
+              <li><Link href="/hackathon" className="hover:text-blue-600 cursor-pointer transition-colors block">Case Studies</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-sm text-slate-900 mb-4">Company</h4>
             <ul className="space-y-3 text-sm text-slate-500">
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">About Us</li>
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Careers</li>
-              <li className="hover:text-blue-600 cursor-pointer transition-colors">Contact</li>
+              <li><Link href="/hackathon" className="hover:text-blue-600 cursor-pointer transition-colors block">About Us</Link></li>
+              <li><Link href="/careers" className="hover:text-blue-600 cursor-pointer transition-colors block">Careers</Link></li>
+              <li><Link href="/hackathon" className="hover:text-blue-600 cursor-pointer transition-colors block">Contact</Link></li>
             </ul>
           </div>
         </div>
